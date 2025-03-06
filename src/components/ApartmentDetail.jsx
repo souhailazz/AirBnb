@@ -59,23 +59,24 @@ const ApartmentDetail = () => {
         <>
           <h1 className="apartment-title">{apartment.titre}</h1>
           <div className="apartment-images">
-            {apartment.Photos && apartment.Photos.length > 0 ? (
-              apartment.Photos.map((photo, index) => (
-                <img 
-                  key={index}
-                  src={photo} 
-                  alt={`Apartment in ${apartment.ville}`} 
-                  className="ApartmentImage"
-                />
-              ))
-            ) : (
-              <img 
-                src="/default-apartment.jpg" 
-                alt={`Apartment in ${apartment.ville}`} 
-                className="ApartmentImage"
-              />
-            )}
-          </div>
+  {apartment.photos && apartment.photos.length > 0 ? (
+    apartment.photos.map((photo, index) => (
+      <img 
+        key={index}
+        src={photo.photo_url}  // Accéder à photo_url au lieu de photo directement
+        alt={`Apartment in ${apartment.ville}`} 
+        className="ApartmentImage"
+      />
+    ))
+  ) : (
+    <img 
+      src="/default-apartment.jpg" 
+      alt={`Apartment in ${apartment.ville}`} 
+      className="ApartmentImage"
+    />
+  )}
+</div>
+
           <p className="apartment-price"><strong>Price:</strong> {apartment.prix} EUR/night</p>
           <p><strong>Capacity:</strong> {apartment.capacite} guests</p>
           <p><strong>Address:</strong> {apartment.adresse}, {apartment.ville}</p>

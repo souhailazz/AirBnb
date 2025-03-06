@@ -87,17 +87,38 @@ namespace AppartementReservationAPI.Controllers
 
         // GET: api/Apartments/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Appartement>> GetApartmentById(int id)
-        {
-            var apartment = await _context.Appartements.FindAsync(id);
+public async Task<ActionResult<object>> GetApartmentById(int id)
+{
+    var apartment = await _context.Appartements
+        .Include(a => a.Photos)
+        .FirstOrDefaultAsync(a => a.Id == id);
 
-            if (apartment == null)
-            {
-                return NotFound($"Apartment with id {id} not found.");
-            }
+    if (apartment == null)
+    {
+        return NotFound($"Apartment with id {id} not found.");
+    }
 
-            return Ok(apartment);
-        }
+    // Transformer les données pour ne renvoyer que les URLs des photos
+    var result = new
+    {
+        apartment.Id,
+        apartment.Titre,
+        apartment.Description,
+        apartment.Adresse,
+        apartment.Ville,
+        apartment.Prix,
+        apartment.Capacite,
+        apartment.NbrAdultes,
+        apartment.NbrEnfants,
+        apartment.AccepteAnimaux,
+        apartment.Latitude,
+        apartment.Longitude,
+        Photos = apartment.Photos.Select(p => new { p.photo_url }) // Ne renvoyer que les URLs
+    };
+
+    return Ok(result);
+}
+
 
         // GET: api/Apartments/{id}/availability
         [HttpGet("{id}/availability")]
