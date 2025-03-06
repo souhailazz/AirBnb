@@ -1,0 +1,85 @@
+.ApartmentList {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+  align-items:center; /* Ensures equal height items */
+}
+
+.ApartmentItem {
+  width: 100%;
+  max-width: 320px;
+  flex-basis: calc(33.33% - 20px); /* Ensures a maximum of 3 items per row */
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column; /* Makes sure child elements align properly */
+}
+
+.ApartmentItem:hover {
+  transform: scale(1.03);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.ApartmentItem img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.ApartmentDetails {
+  padding: 15px;
+  flex-grow: 1; /* Ensures details section takes available space */
+  display: flex;
+  flex-direction: column;
+}
+
+.ApartmentDetails p {
+  margin: 5px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.ApartmentDetails strong {
+  color: #222;
+  font-size: 16px;
+}
+
+.ReserveButton {
+  width: 100%;
+  background: #ff385c;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 0 0 12px 12px;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.ReserveButton:hover {
+  background: #e03150;
+  transform: scale(1.02);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ApartmentList {
+    gap: 15px;
+  }
+
+  .ApartmentItem {
+    max-width: 100%;
+  }
+
+  .ApartmentDetails p {
+    font-size: 13px;
+  }
+}
