@@ -1,38 +1,51 @@
 .ApartmentDetail {
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 20px;
     padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    border-radius: 0;
+    box-shadow: none;
   }
   
   h1 {
-    font-size: 24px;
-    color: #333;
+    font-size: 28px;
+    color: #2c3e50;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+  }
+  .description-box {
+    border: 1px solid #ccc; /* Light gray border */
+    padding: 15px; /* Space inside the box */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light background color */
+    margin-top: 10px; /* Space above the box */
+    font-size: 1.2em; /* Increase description font size */
   }
   
   .ApartmentImage {
     width: 100%;
     max-height: 400px;
     object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+  }
+  
+  .ApartmentImage:hover {
+    transform: scale(1.05);
   }
   
   p {
-    font-size: 16px;
-    color: #555;
-    line-height: 1.6;
+    font-size: 18px;
+    color: #34495e;
+    line-height: 1.8;
   }
   
   .loading, .error {
     text-align: center;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
-    color: #d9534f;
+    color: #e74c3c;
   }
   
   @media (max-width: 768px) {
@@ -51,5 +64,44 @@
     p {
       font-size: 14px;
     }
+  }
+  
+  .apartment-title {
+    font-size: 2em; /* Increase title font size */
+    margin-bottom: 15px;
+    color: #2980b9;
+  }
+  
+  .apartment-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .ApartmentImage {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 4px;
+  }
+  
+  .apartment-price {
+    font-size: 1.8em;
+    color: #e67e22;
+    font-size: 1.2em; /* Increase price font size */
+  }
+  
+  .reserve-button {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .reserve-button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
   }
   

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import DateRangePicker from './DatePicker'; // Import the new DateRangePicker component
 import './ApartmentDetail.css';
 import Map from './Map';  // Import the Map component
+import { FaBed, FaDollarSign, FaMapMarkerAlt, FaInfoCircle } from 'react-icons/fa'; // Import icons
 
 const ApartmentDetail = () => {
   const { id } = useParams();  // Get the ID from the URL
@@ -54,7 +55,7 @@ const ApartmentDetail = () => {
   if (error) return <div className="error">{error}</div>;
 
   return (
-    <div className="ApartmentDetail">
+    <div className="ApartmentDetail futuristic">
       {apartment ? (
         <>
           <h1 className="apartment-title">{apartment.titre}</h1>
@@ -63,7 +64,7 @@ const ApartmentDetail = () => {
     apartment.photos.map((photo, index) => (
       <img 
         key={index}
-        src={photo.photo_url}  // Accéder à photo_url au lieu de photo directement
+        src={photo.photo_url}  
         alt={`Apartment in ${apartment.ville}`} 
         className="ApartmentImage"
       />
@@ -77,10 +78,13 @@ const ApartmentDetail = () => {
   )}
 </div>
 
-          <p className="apartment-price"><strong>Price:</strong> {apartment.prix} EUR/night</p>
-          <p><strong>Capacity:</strong> {apartment.capacite} guests</p>
-          <p><strong>Address:</strong> {apartment.adresse}, {apartment.ville}</p>
-          <p><strong>Description:</strong> {apartment.description}</p>
+          <p className="apartment-price"><strong><FaDollarSign /> Price:</strong> {apartment.prix} EUR/night</p>
+          <p><strong><FaBed /> Capacity:</strong> {apartment.capacite} guests</p>
+          <p><strong><FaMapMarkerAlt /> Address:</strong> {apartment.adresse}, {apartment.ville}</p>
+          <div className="description-box">
+            <strong><FaInfoCircle /> Description:</strong>
+            <p>{apartment.description}</p>
+          </div>
           
           <DateRangePicker onDateChange={(start, end) => console.log(start, end)} unavailableDates={unavailableDates} />
           <Map locations={[{ lat: apartment.latitude, lng: apartment.longitude }]} />

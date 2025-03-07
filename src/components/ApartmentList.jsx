@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './ApartmentList.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDollarSign, faUsers, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 
 const ApartmentList = ({ apartments, loading, error }) => {
     if (loading) return <div className="loading">Loading apartments...</div>;
@@ -33,9 +35,9 @@ const ApartmentList = ({ apartments, loading, error }) => {
                                 />
                                 <div className="ApartmentDetails">
                                     <h2>{apartment.titre || "No Title"}</h2>
-                                    <p><strong>Price:</strong> {apartment.prix ? `${apartment.prix} EUR/night` : "Not Available"}</p>
-                                    <p><strong>Capacity:</strong> {apartment.capacite ? `${apartment.capacite} guests` : "N/A"}</p>
-                                    <p><strong>Address:</strong> {apartment.adresse ? apartment.adresse : "Unknown"}, {apartment.ville ? apartment.ville : "Unknown"}</p>
+                                    <p><FontAwesomeIcon icon={faDollarSign} /> <strong>Price:</strong> {apartment.prix ? `${apartment.prix} EUR/night` : "Not Available"}</p>
+                                    <p><FontAwesomeIcon icon={faUsers} /> <strong>Capacity:</strong> {apartment.capacite ? `${apartment.capacite} guests` : "N/A"}</p>
+                                    <p><FontAwesomeIcon icon={faMapMarkerAlt} /> <strong>Address:</strong> {apartment.adresse ? apartment.adresse : "Unknown"}, {apartment.ville ? apartment.ville : "Unknown"}</p>
                                 </div>
                             </Link>
                         </div>
