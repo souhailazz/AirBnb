@@ -87,38 +87,59 @@ namespace AppartementReservationAPI.Controllers
 
         // GET: api/Apartments/{id}
         [HttpGet("{id}")]
-public async Task<ActionResult<object>> GetApartmentById(int id)
-{
-    var apartment = await _context.Appartements
-        .Include(a => a.Photos)
-        .FirstOrDefaultAsync(a => a.Id == id);
+        public async Task<ActionResult<object>> GetApartmentById(int id)
+        {
+            var apartment = await _context.Appartements
+                .Include(a => a.Photos)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
-    if (apartment == null)
-    {
-        return NotFound($"Apartment with id {id} not found.");
-    }
+            if (apartment == null)
+            {
+                return NotFound($"Apartment with id {id} not found.");
+            }
 
-    // Transformer les données pour ne renvoyer que les URLs des photos
-    var result = new
-    {
-        apartment.Id,
-        apartment.Titre,
-        apartment.Description,
-        apartment.Adresse,
-        apartment.Ville,
-        apartment.Prix,
-        apartment.Capacite,
-        apartment.NbrAdultes,
-        apartment.NbrEnfants,
-        apartment.AccepteAnimaux,
-        apartment.Latitude,
-        apartment.Longitude,
-        Photos = apartment.Photos.Select(p => new { p.photo_url }) // Ne renvoyer que les URLs
-    };
+            // Transformer les données pour ne renvoyer que les URLs des photos
+            var result = new
+            {
+                apartment.Id,
+                apartment.Titre,
+                apartment.Description,
+                apartment.Adresse,
+                apartment.Ville,
+                apartment.Prix,
+                apartment.Capacite,
+                apartment.NbrAdultes,
+                apartment.NbrEnfants,
+                apartment.AccepteAnimaux,
+                apartment.Latitude,
+                apartment.Longitude,
+                apartment.frais_menage,
+                apartment.max_animaux,
+                apartment.surface,
+                apartment.balcon_surface,
+                apartment.chauffage,
+                apartment.wifi,
+                apartment.television,
+                apartment.lave_Linge,
+                apartment.seche_cheveux,
+                apartment.cuisine_equipee,
+                apartment.parking_payant,
+                apartment.petit_dejeuner_inclus,
+                apartment.lit_parapluie,
+                apartment.menage_disponible,
+                apartment.nombre_min_nuits,
+                apartment.remise_semaine,
+                apartment.remise_mois,
+                apartment.checkin_heure,
+                apartment.checkout_heure,
+                apartment.politique_annulation,
+                apartment.depart_instructions,
+                apartment.regles_maison,
+                Photos = apartment.Photos.Select(p => new { p.photo_url }) // Ne renvoyer que les URLs
+            };
 
-    return Ok(result);
-}
-
+            return Ok(result);
+        }
 
         // GET: api/Apartments/{id}/availability
         [HttpGet("{id}/availability")]
