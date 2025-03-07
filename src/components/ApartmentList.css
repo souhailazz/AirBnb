@@ -1,89 +1,122 @@
+/* Base styles and variables */
+:root {
+  --primary: #3a86ff;
+  --primary-dark: #2667cc;
+  --secondary: #ff006e;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --gray: #6c757d;
+  --light-gray: #e9ecef;
+  --success: #38b000;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+}
+
 .ApartmentList {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 20px;
-  justify-items: center;
-  align-items:center; /* Ensures equal height items */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .ApartmentItem {
-  width: calc(33.333% - 20px); /* Adjust based on your layout */
-  background: white;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: var(--border-radius);
   overflow: hidden;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  display: flex;
-  flex-direction: column; /* Makes sure child elements align properly */
-  border: 1px solid #ccc;
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
 }
 
 .ApartmentItem:hover {
-  transform: scale(1.03);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
 }
 
-.ApartmentItem img {
+.ApartmentItem a {
+  text-decoration: none;
+  color: var(--dark);
+}
+
+.ApartmentImage {
   width: 100%;
-  height: auto;
+  height: 200px;
   object-fit: cover;
-  display: block;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
 }
 
 .ApartmentDetails {
-  padding: 10px;
-  background-color: #f9f9f9;
-  flex-grow: 1; /* Ensures details section takes available space */
-  display: flex;
-  flex-direction: column;
+  padding: 1.5rem;
+}
+
+.ApartmentDetails h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--primary);
 }
 
 .ApartmentDetails p {
-  margin: 5px 0;
-  color: #333;
-  font-size: 14px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.ApartmentDetails svg {
+  margin-right: 0.5rem;
+  color: var(--primary);
 }
 
 .ApartmentDetails strong {
-  color: #222;
-  font-size: 16px;
+  font-weight: 600;
+  margin-right: 0.25rem;
 }
 
-.ReserveButton {
-  width: 100%;
-  background: #ff385c;
-  color: white;
-  border: none;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 0 0 12px 12px;
-  transition: background 0.3s, transform 0.2s;
+/* Loading and error states */
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: var(--gray);
+  grid-column: 1 / -1;
 }
 
-.ReserveButton:hover {
-  background: #e03150;
-  transform: scale(1.02);
+.error {
+  color: var(--secondary);
 }
 
-/* Responsive Design */
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .ApartmentList {
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    padding: 1rem;
+    gap: 1rem;
   }
 
-  .ApartmentItem {
-    max-width: 100%;
+  .ApartmentDetails {
+    padding: 1rem;
+  }
+
+  .ApartmentDetails h2 {
+    font-size: 1.1rem;
   }
 
   .ApartmentDetails p {
-    font-size: 13px;
+    font-size: 0.8rem;
   }
 }
 
-a {
-  text-decoration: none;
+@media (max-width: 480px) {
+  .ApartmentList {
+    grid-template-columns: 1fr;
+  }
+
+  .ApartmentImage {
+    height: 180px;
+  }
 }
+
