@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import DateRangePicker from './DatePicker'; // Import the new DateRangePicker component
 import './ApartmentDetail.css';
+import BookingCalendar from './BookingCalendar';
 import Map from './Map';  // Import the Map component
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Import FontAwesome
 import { faWifi, faTv, faSnowflake, faUtensils, faCar, faCoffee, faBaby, faBroom } from '@fortawesome/free-solid-svg-icons'; // Import specific icons
@@ -15,6 +16,8 @@ const ApartmentDetail = () => {
   const [error, setError] = useState(null);
   const [unavailableDates, setUnavailableDates] = useState([]);
   const [imageLoading, setImageLoading] = useState(true); // New state for image loading
+  const [startDate, setStartDate] = useState(null); // New state for start date
+  const [endDate, setEndDate] = useState(null); // New state for end date
 
   useEffect(() => {
     fetchApartmentDetails(id);  
@@ -42,16 +45,56 @@ const ApartmentDetail = () => {
 
   const fetchApartmentAvailability = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5276/api/Apartments/${id}/availability`);
+      const response = await fetch(`http://localhost:5276/api/Apartments/GetApartmentAvailability/${id}`);
       if (!response.ok) {
-        const errorMessage = await response.text(); // Get the error message from the response
+        const errorMessage = await response.text();
         throw new Error(`Error fetching availability data: ${errorMessage}`);
       }
       const data = await response.json();
-      setUnavailableDates(data);
+      
+      // If data is empty, ensure that it is an array and not an empty set
+      setUnavailableDates(data.length > 0 ? data : []); // Ensure we're using a clean array
     } catch (err) {
-      console.error('Fetch availability error:', err); // Log the error for debugging
-      setError(`Error fetching availability data: ${err.message}`); // Set a more descriptive error message
+      console.error('Fetch availability error:', err);
+      setError(`Error fetching availability data: ${err.message}`);
+    }
+  };
+
+  const isDateValid = (selectedDate, unavailableDates, startDate) => {
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+    if (selectedDate < today) {
+        return false; // Don't allow past dates
+    }
+    if (unavailableDates.includes(selectedDate)) {
+        return false; // Don't allow unavailable dates
+    }
+    if (startDate) {
+        const start = new Date(startDate);
+        const end = new Date(selectedDate);
+        
+        // Ensure the user is selecting consecutive days
+        let tempDate = new Date(start);
+        while (tempDate <= end) {
+            if (unavailableDates.includes(tempDate.toISOString().split("T")[0])) {
+                return false; // Don't allow skipping unavailable dates
+            }
+            tempDate.setDate(tempDate.getDate() + 1);
+        }
+    }
+    return true;
+  };
+
+  const handleDateSelection = (selectedDate) => {
+    if (!isDateValid(selectedDate, unavailableDates, startDate)) {
+      alert("Invalid date selection. Make sure the dates are consecutive and not unavailable.");
+      return;
+    }
+
+    if (!startDate) {
+      setStartDate(selectedDate);
+    } else {
+      setEndDate(selectedDate);
     }
   };
 
@@ -135,8 +178,12 @@ const ApartmentDetail = () => {
             <p>{apartment.description}</p>
           </div>
           
-          <DateRangePicker onDateChange={(start, end) => console.log(start, end)} unavailableDates={unavailableDates} />
-          <Map locations={[{ lat: apartment.latitude, lng: apartment.longitude }]} />
+          {apartment && unavailableDates.length > 0 ? (
+            <BookingCalendar unavailableDates={unavailableDates} />
+          ) : (
+            <p>No unavailable dates found.</p>
+          )}
+          
           <button className="reserve-button">Reserve</button>
         </>
       ) : (

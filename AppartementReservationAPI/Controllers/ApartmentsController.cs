@@ -141,31 +141,39 @@ namespace AppartementReservationAPI.Controllers
             return Ok(result);
         }
 
-        // GET: api/Apartments/{id}/availability
-        [HttpGet("{id}/availability")]
-        public async Task<ActionResult<IEnumerable<object>>> GetApartmentAvailability(int id)
+       // GET: api/Apartments/{id}/availability
+[HttpGet("GetApartmentAvailability/{id}")]
+public async Task<ActionResult<IEnumerable<string>>> GetApartmentAvailability(int id)
+{
+    try
+    {
+        var reservations = await _context.Reservation
+            .Where(r => r.id_appartement == id)
+            .Select(r => new { r.date_depart, r.date_sortie })
+            .ToListAsync();
+
+        var unavailableDates = new HashSet<string>(); // Evite les doublons
+
+        foreach (var reservation in reservations)
         {
-            try
-            {
-                var reservations = await _context.Reservation
-                    .Where(r => r.id_appartement == id)
-                    .Select(r => new { r.date_depart, r.date_sortie })
-                    .ToListAsync();
+            DateTime startDate = reservation.date_depart;
+            DateTime endDate = reservation.date_sortie;
 
-                if (reservations == null || reservations.Count == 0)
-                {
-                    return NotFound("No reservations found for this apartment.");
-                }
-
-                return Ok(reservations);
-            }
-            catch (Exception ex)
+            for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
             {
-                // Log the exception details
-                Console.WriteLine($"Error fetching availability for apartment {id}: {ex.Message}");
-                return StatusCode(500, "Internal server error: " + ex.Message);
+                unavailableDates.Add(date.ToString("yyyy-MM-dd")); // Format standard
             }
         }
+
+        return Ok(unavailableDates.ToList()); // Convertir HashSet en List avant de retourner
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error fetching availability for apartment {id}: {ex.Message}");
+        return StatusCode(500, "Internal server error: " + ex.Message);
+    }
+}
+
 
         // GET: api/Apartments/city/{ville}
         [HttpGet("city/{ville}")]

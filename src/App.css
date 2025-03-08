@@ -77,7 +77,6 @@
   }
 }
 
-/* Language selector styles */
 .language-selector {
   position: absolute;
   top: 1rem;
@@ -90,9 +89,7 @@
   max-width: 800px;
   margin: 1rem auto;
   padding: 1rem;
-  background-color: white;
   border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
 }
 
 /* Login and Signup page styles */
@@ -129,5 +126,64 @@
 
 .auth-form button:hover {
   background-color: var(--primary-dark);
+}
+/* Header container */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #f8f9fa; /* Light gray background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Profile icon and text */
+.profile-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.profile-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333; /* Dark gray text */
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.profile-link:hover {
+  color: #007bff; /* Blue color on hover */
+}
+
+.user-icon {
+  margin-right: 8px;
+  font-size: 20px; /* Adjust icon size */
+}
+
+.profile-text {
+  font-weight: 500; /* Medium font weight */
+}
+
+/* Language selector */
+.language-selector {
+  margin-left: auto; /* Push to the right */
+  margin-right: 20px; /* Add some spacing */
+}
+
+.home-button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.home-button:hover {
+  color: #007bff; /* Blue color on hover */
+}
+
+.home-icon {
+  margin-right: 5px; /* Space between icon and text */
+  font-size: 1.2em; /* Icon size */
 }
 

@@ -4,6 +4,7 @@ using AppartementReservationAPI.Data; // Assuming your DbContext is here
 using AppartementReservationAPI.Models; // Assuming your Client model is here
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -47,22 +48,26 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] Client client)
+public async Task<IActionResult> Login([FromBody] Client client)
+{
+    if (client == null || string.IsNullOrEmpty(client.Mail) || string.IsNullOrEmpty(client.password))
     {
-        if (client == null || string.IsNullOrEmpty(client.Mail) || string.IsNullOrEmpty(client.password))
-        {
-            return BadRequest("Invalid login data.");
-        }
-
-        // Find the client by email and password
-        var existingClient = await _context.Client
-            .FirstOrDefaultAsync(c => c.Mail == client.Mail && c.password == client.password);
-
-        if (existingClient == null)
-        {
-            return Unauthorized("Invalid credentials.");
-        }
-
-        return Ok("Login successful.");
+        return BadRequest("Invalid login data.");
     }
+
+    // Find the client by email and password
+    var existingClient = await _context.Client
+        .FirstOrDefaultAsync(c => c.Mail == client.Mail && c.password == client.password);
+
+    if (existingClient == null)
+    {
+        return Unauthorized("Invalid credentials.");
+    }
+
+    // Store the client ID in the session
+    HttpContext.Session.SetInt32("ClientId", existingClient.Id);
+    Console.WriteLine($"Client ID: {existingClient.Id}");
+
+    return Ok(new { id = existingClient.Id, message = "Login successful." });
+}
 }

@@ -20,10 +20,11 @@ function Login() {
                 nom: '',
                 prenom: ''
             });
-
+    
             if (response.status === 200) {
                 console.log('Login successful');
-                localStorage.setItem('userId', response.data.id); 
+                sessionStorage.setItem('userId', response.data.id); // Store the userId in sessionStorage
+                console.log(response.data.id);
                 navigate('/');
             }
         } catch (error) {

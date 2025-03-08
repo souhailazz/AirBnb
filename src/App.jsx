@@ -1,22 +1,56 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import LanguageSelector from './components/LanguageSelector';
 import SearchBar from './components/SearchBar';
 import ApartmentList from './components/ApartmentList';
 import Map from './components/Map';
-import Login from './components/Login'
+import Login from './components/Login';
 import Signup from './components/Signup';
-import './i18n'; 
-import ApartmentDetail from './components/ApartmentDetail';  // New component for apartment details
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import MyReservations from './components/MyReservations';
+import './i18n';
+import ApartmentDetail from './components/ApartmentDetail'; // New component for apartment details
+import { FaUser, FaHome } from 'react-icons/fa'; // Import FaUser and FaHome for icons
+import './app.css';
+
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
 
 function App() {
   const [apartments, setApartments] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // useNavigate is now inside the Router context
 
   useEffect(() => {
-    fetchAllApartments(); 
+    fetchAllApartments();
   }, []);
+
+  const handleUserClick = () => {
+    const userId = sessionStorage.getItem('userId'); // Retrieve the userId from sessionStorage
+
+    if (!userId) {
+      navigate('/login'); // Redirect to login if no userId exists
+    } else {
+      navigate('/MyReservations');
+      // Fetch reservations for the logged-in user
+      fetch(`http://localhost:5276/api/reservations/${userId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          navigate('/MyReservations');
+        })
+        .catch((error) => console.error('Error fetching reservations:', error));
+    }
+  };
+
+  const handleHomeClick = () => {
+    navigate('/'); // Navigate to the root path
+  };
 
   const fetchAllApartments = async (params = '') => {
     setLoading(true);
@@ -38,64 +72,57 @@ function App() {
       console.log('Received apartments:', data);
       setApartments(data);
     } catch (error) {
-      console.error("Error fetching apartments:", error);
+      console.error('Error fetching apartments:', error);
       setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle search form submission
-  const handleSearch = async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-
-    let params = '?';
-
-    if (formData.get('location')) {
-      params += `location=${encodeURIComponent(formData.get('location'))}&`;
-    }
-    if (formData.get('adults') && formData.get('adults') !== '0') {
-      params += `adults=${encodeURIComponent(formData.get('adults'))}&`;
-    }
-    if (formData.get('children') && formData.get('children') !== '0') {
-      params += `children=${encodeURIComponent(formData.get('children'))}&`;
-    }
-    if (formData.get('pets') === 'on') {
-      params += 'pets=true&';
-    }
-
-    fetchAllApartments(params);
-  };
-
-  
   return (
-    <Router>
-      <div className="App">
-        <LanguageSelector />
-        <SearchBar onSearch={handleSearch} />
-        {loading && <p>Loading apartments...</p>}
-        
-        <Routes>
-          {/* Home Page */}
-          <Route path="/" element={
+    <div className="App">
+      <header className="header">
+        <div className="home-button" onClick={handleHomeClick}>
+          <FaHome className="home-icon" /><span className="profile-text">
+          Home </span>
+        </div>
+        <div className="profile-icon" onClick={handleUserClick}>
+          <a className="profile-link">
+            <FaUser className="user-icon" />
+            <span className="profile-text">Profile</span>
+          </a>
+        </div>
+        <div className="language-selector">
+          <LanguageSelector />
+        </div>
+        <div className="search-bar">
+          <SearchBar />
+        </div>
+      </header>
+      {loading && <p>Loading apartments...</p>}
+
+      <Routes>
+        {/* Home Page */}
+        <Route
+          path="/"
+          element={
             <div style={{ display: 'flex' }}>
               <ApartmentList apartments={apartments} loading={loading} error={error} />
               <Map locations={apartments.map((a) => ({ lat: a.latitude, lng: a.longitude }))} />
             </div>
-          } />
-          
-          {/* Apartment Detail Page */}
-          <Route path="/apartments/:id" element={<ApartmentDetail />} />
+          }
+        />
 
-          {/* Login Page */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+        {/* Apartment Detail Page */}
+        <Route path="/apartments/:id" element={<ApartmentDetail />} />
 
-        </Routes>
-      </div>
-    </Router>
-    
+        {/* Login Page */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/MyReservations" element={<MyReservations />} />
+      </Routes>
+    </div>
   );
 }
-export default App;
+
+export default AppWrapper; 
