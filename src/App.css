@@ -187,3 +187,18 @@
   font-size: 1.2em; /* Icon size */
 }
 
+.disconnect-button {
+  display: flex;
+  align-items: center;
+  background-color: #f44336; /* Example background color */
+  color: white; /* Text color */
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px; /* Rounded corners */
+}
+
+.disconnect-icon {
+  margin-right: 5px; /* Space between icon and text */
+}
+

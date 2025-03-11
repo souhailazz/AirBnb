@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Import Font
 import { faWifi, faTv, faSnowflake, faUtensils, faCar, faCoffee, faBaby, faBroom } from '@fortawesome/free-solid-svg-icons'; // Import specific icons
 import { Carousel } from 'react-responsive-carousel'; // Import the new Carousel component
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Import carousel CSS
+import ReservationModal from './ReservationModal'; // Import the new ReservationModal component
+import MessagingModal from './MessagingModal'; // Import the new MessagingModal component
 
 const ApartmentDetail = () => {
   const { id } = useParams();  // Get the ID from the URL
@@ -18,6 +20,9 @@ const ApartmentDetail = () => {
   const [imageLoading, setImageLoading] = useState(true); // New state for image loading
   const [startDate, setStartDate] = useState(null); // New state for start date
   const [endDate, setEndDate] = useState(null); // New state for end date
+  const [isReservationModalOpen, setReservationModalOpen] = useState(false); // State for reservation modal
+  const [isMessagingModalOpen, setMessagingModalOpen] = useState(false); // State for messaging modal
+  const [reservationDetails, setReservationDetails] = useState({ adults: 0, children: 0, pets: 0 }); // State for reservation details
 
   useEffect(() => {
     fetchApartmentDetails(id);  
@@ -102,6 +107,16 @@ const ApartmentDetail = () => {
     setImageLoading(false); // Set loading to false when the image is loaded
   };
 
+  const handleReserveClick = () => {
+    setReservationModalOpen(true); // Open the reservation modal
+  };
+
+  const handleReservationConfirm = (details) => {
+    setReservationDetails(details); // Set reservation details
+    setReservationModalOpen(false); // Close reservation modal
+    setMessagingModalOpen(true); // Open messaging modal
+  };
+
   if (loading) return <div className="loading">Loading apartment details...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -184,10 +199,24 @@ const ApartmentDetail = () => {
             <p>No unavailable dates found.</p>
           )}
           
-          <button className="reserve-button">Reserve</button>
+          <button className="reserve-button" onClick={handleReserveClick}>Reserve</button>
         </>
       ) : (
         <div>No apartment details available</div>
+      )}
+
+      {isReservationModalOpen && (
+        <ReservationModal 
+          onConfirm={handleReservationConfirm} 
+          onClose={() => setReservationModalOpen(false)} 
+        />
+      )}
+
+      {isMessagingModalOpen && (
+        <MessagingModal 
+          reservationDetails={reservationDetails} 
+          onClose={() => setMessagingModalOpen(false)} 
+        />
       )}
     </div>
   );

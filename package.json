@@ -19,6 +19,7 @@
     "express": "^4.21.2",
     "i18next": "^24.2.2",
     "jspdf": "^3.0.0",
+    "lucide-react": "^0.479.0",
     "mssql": "^11.0.1",
     "react": "^19.0.0",
     "react-calendar": "^5.1.0",

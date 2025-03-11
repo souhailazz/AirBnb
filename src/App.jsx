@@ -9,7 +9,7 @@ import Signup from './components/Signup';
 import MyReservations from './components/MyReservations';
 import './i18n';
 import ApartmentDetail from './components/ApartmentDetail'; // New component for apartment details
-import { FaUser, FaHome } from 'react-icons/fa'; // Import FaUser and FaHome for icons
+import { FaUser, FaHome, FaSignOutAlt } from 'react-icons/fa'; // Import FaUser, FaHome, and FaSignOutAlt for icons
 import './app.css';
 
 function AppWrapper() {
@@ -98,6 +98,14 @@ function App() {
         <div className="search-bar">
           <SearchBar />
         </div>
+        {sessionStorage.getItem('userId') && (
+          <button className="disconnect-button" onClick={() => {
+            sessionStorage.removeItem('userId');
+            navigate('/login');
+          }}>
+            <FaSignOutAlt className="disconnect-icon" /> Disconnect
+          </button>
+        )}
       </header>
       {loading && <p>Loading apartments...</p>}
 

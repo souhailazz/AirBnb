@@ -35,19 +35,53 @@ const MyReservations = () => {
         fetchReservations();
     }, [sessionId, navigate]);
 
-    const downloadPDF = (reservation) => {
+    const downloadPDF = async (reservation) => {
         const doc = new jsPDF();
-        doc.text(`Reservation Details`, 10, 10);
-        doc.text(`Title: ${reservation.appartement.titre}`, 10, 20);
-        doc.text(`Location: ${reservation.appartement.adresse}, ${reservation.appartement.ville}`, 10, 30);
-        doc.text(`Client: ${reservation.client.nom} ${reservation.client.prenom}`, 10, 40);
-        doc.text(`Check-in: ${new Date(reservation.date_depart).toLocaleDateString()} ${reservation.appartement.checkin_heure}`, 10, 50);
-        doc.text(`Check-out: ${new Date(reservation.date_sortie).toLocaleDateString()} ${reservation.appartement.checkout_heure}`, 10, 60);
-        doc.text(`Total: ${reservation.paiement.total} €`, 10, 70);
-        doc.text(`Status: ${reservation.etat}`, 10, 80);
+    
+        // Charger une police personnalisée (Font Awesome)
+        const fontAwesomeURL = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.ttf";
+    
+        const response = await fetch(fontAwesomeURL);
+        const fontData = await response.arrayBuffer();
+    
+        doc.addFileToVFS("FontAwesome.ttf", fontData);
+        doc.addFont("FontAwesome.ttf", "FontAwesome", "normal");
+        doc.setFont("FontAwesome");
+    
+        // Définir le style
+        doc.setFontSize(16);
+        doc.text("  Details de la Rservation", 10, 15); // Icône "pencil" pour le titre
+    
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+    
+        const yStart = 30;
+        const lineHeight = 10;
+    
+        doc.text(" Appartement :", 10, yStart);
+        doc.text(reservation.appartement.titre, 50, yStart);
+    
+        doc.text(" Adresse :", 10, yStart + lineHeight);
+        doc.text(`${reservation.appartement.adresse}, ${reservation.appartement.ville}`, 50, yStart + lineHeight);
+    
+        doc.text(" Client :", 10, yStart + 2 * lineHeight);
+        doc.text(`${reservation.client.nom} ${reservation.client.prenom}`, 50, yStart + 2 * lineHeight);
+    
+        doc.text(" Check-in :", 10, yStart + 3 * lineHeight);
+        doc.text(`${new Date(reservation.date_depart).toLocaleDateString()} à ${reservation.appartement.checkin_heure}`, 50, yStart + 3 * lineHeight);
+    
+        doc.text(" Check-out :", 10, yStart + 4 * lineHeight);
+        doc.text(`${new Date(reservation.date_sortie).toLocaleDateString()} à ${reservation.appartement.checkout_heure}`, 50, yStart + 4 * lineHeight);
+    
+        doc.text(" Total :", 10, yStart + 6 * lineHeight);
+        doc.text(`${reservation.paiement.total} €`, 50, yStart + 6 * lineHeight);
+    
+        doc.text("Statut :", 10, yStart + 7 * lineHeight);
+        doc.text(reservation.etat, 50, yStart + 7 * lineHeight);
+    
         doc.save(`reservation_${reservation.id_reservation}.pdf`);
     };
-
+    
     if (!sessionId) {
         // If there's no sessionId, don't render the reservations (user will be redirected)
         return null;
