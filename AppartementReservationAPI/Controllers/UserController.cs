@@ -55,7 +55,6 @@ public async Task<IActionResult> Login([FromBody] Client client)
         return BadRequest("Invalid login data.");
     }
 
-    // Find the client by email and password
     var existingClient = await _context.Client
         .FirstOrDefaultAsync(c => c.Mail == client.Mail && c.password == client.password);
 
@@ -64,7 +63,6 @@ public async Task<IActionResult> Login([FromBody] Client client)
         return Unauthorized("Invalid credentials.");
     }
 
-    // Store the client ID in the session
     HttpContext.Session.SetInt32("ClientId", existingClient.Id);
     Console.WriteLine($"Client ID: {existingClient.Id}");
 

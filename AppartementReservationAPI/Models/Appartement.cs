@@ -7,7 +7,7 @@ namespace AppartementReservationAPI.Models
     public string Description { get; set; }
     public string Adresse { get; set; }
     public string Ville { get; set; }
-    public decimal Prix { get; set; }
+    public int Prix { get; set; }
     public int Capacite { get; set; }
     public int NbrAdultes { get; set; } // Max number of adults
     public int NbrEnfants { get; set; } // Max number of children

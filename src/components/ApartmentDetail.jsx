@@ -1,44 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import DateRangePicker from './DatePicker'; // Import the new DateRangePicker component
 import './ApartmentDetail.css';
 import BookingCalendar from './BookingCalendar';
-import Map from './Map';  // Import the Map component
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Import FontAwesome
-import { faWifi, faTv, faSnowflake, faUtensils, faCar, faCoffee, faBaby, faBroom } from '@fortawesome/free-solid-svg-icons'; // Import specific icons
-import { Carousel } from 'react-responsive-carousel'; // Import the new Carousel component
-import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Import carousel CSS
-import ReservationModal from './ReservationModal'; // Import the new ReservationModal component
-import MessagingModal from './MessagingModal'; // Import the new MessagingModal component
+import Map from './Map';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWifi, faTv, faSnowflake, faUtensils, faCar, faCoffee, faBaby, faBroom } from '@fortawesome/free-solid-svg-icons';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import ReservationModal from './ReservationModal';
+import MessagingModal from './MessagingModal';
+const sessionId = sessionStorage.getItem('userId'); // Retrieve session ID dynamically
 
 const ApartmentDetail = () => {
-  const { id } = useParams();  // Get the ID from the URL
+  const { id } = useParams();
   const [apartment, setApartment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [unavailableDates, setUnavailableDates] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [isReservationModalOpen, setReservationModalOpen] = useState(false);
+  const [isMessagingModalOpen, setMessagingModalOpen] = useState(false);
+  const [reservationDetails, setReservationDetails] = useState({ adults: 0, children: 0, pets: 0 });
   const [imageLoading, setImageLoading] = useState(true); // New state for image loading
-  const [startDate, setStartDate] = useState(null); // New state for start date
-  const [endDate, setEndDate] = useState(null); // New state for end date
-  const [isReservationModalOpen, setReservationModalOpen] = useState(false); // State for reservation modal
-  const [isMessagingModalOpen, setMessagingModalOpen] = useState(false); // State for messaging modal
-  const [reservationDetails, setReservationDetails] = useState({ adults: 0, children: 0, pets: 0 }); // State for reservation details
 
   useEffect(() => {
-    fetchApartmentDetails(id);  
-    fetchApartmentAvailability(id); // Fetch availability data
+    fetchApartmentDetails(id);
+    fetchApartmentAvailability(id);
   }, [id]);
-
+  const handleDateSelect = (startDate, endDate) => {
+    setStartDate(startDate);
+    setEndDate(endDate);
+  };
+  
   const fetchApartmentDetails = async (id) => {
     setLoading(true);
     setError(null);
-
     try {
       const response = await fetch(`http://localhost:5276/api/Apartments/${id}`);
-      if (!response.ok) {
-        throw new Error(`Error fetching apartment details`);
-      }
-
+      if (!response.ok) throw new Error(`Error fetching apartment details`);
       const data = await response.json();
       setApartment(data);
     } catch (err) {
@@ -47,74 +47,122 @@ const ApartmentDetail = () => {
       setLoading(false);
     }
   };
+  const handleImageLoad = () => {
+    setImageLoading(false); // Set loading to false when the image is loaded
+  };
+
 
   const fetchApartmentAvailability = async (id) => {
     try {
       const response = await fetch(`http://localhost:5276/api/Apartments/GetApartmentAvailability/${id}`);
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Error fetching availability data: ${errorMessage}`);
-      }
+      if (!response.ok) throw new Error(`Error fetching availability data`);
       const data = await response.json();
-      
-      // If data is empty, ensure that it is an array and not an empty set
-      setUnavailableDates(data.length > 0 ? data : []); // Ensure we're using a clean array
+      setUnavailableDates(data.length > 0 ? data : []);
     } catch (err) {
       console.error('Fetch availability error:', err);
       setError(`Error fetching availability data: ${err.message}`);
     }
   };
-
-  const isDateValid = (selectedDate, unavailableDates, startDate) => {
-    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
-
-    if (selectedDate < today) {
-        return false; // Don't allow past dates
+  const createPayment = async (total, method) => {
+    try {
+      const paymentData = {
+        total: total,
+        methode_de_paiement: method,
+        payment_code: "PAYMENT-" + Date.now() // Generate a unique payment code
+      };
+  
+      const response = await fetch('http://localhost:5276/api/Payments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData)
+      });
+  
+      const data = await response.text(); // First get the response as text
+    try {
+      const jsonData = JSON.parse(data); // Try to parse it as JSON
+      if (!response.ok) {
+        throw new Error(jsonData.message || 'Failed to create payment');
+      }
+      return jsonData;
+    } catch (parseError) {
+      throw new Error(data || 'Failed to create payment');
     }
-    if (unavailableDates.includes(selectedDate)) {
-        return false; // Don't allow unavailable dates
-    }
-    if (startDate) {
-        const start = new Date(startDate);
-        const end = new Date(selectedDate);
-        
-        // Ensure the user is selecting consecutive days
-        let tempDate = new Date(start);
-        while (tempDate <= end) {
-            if (unavailableDates.includes(tempDate.toISOString().split("T")[0])) {
-                return false; // Don't allow skipping unavailable dates
-            }
-            tempDate.setDate(tempDate.getDate() + 1);
+  } catch (error) {
+    console.error('Error creating payment:', error);
+    throw error;
+  }
+  };
+  const createReservation = async (reservationDetails) => {
+    try {
+      if (!startDate || !endDate) {
+        throw new Error('Please select both check-in and check-out dates');
+      }
+  
+      // Calculate number of nights
+      const nights = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+      
+      // Calculate total price
+      const totalPrice = apartment.prix * nights + apartment.frais_menage;
+  
+      // Create payment first
+      const paiement = await createPayment(totalPrice, "Card");
+  
+      // Create reservation DTO
+      const reservationDto  = {
+        id_client: 1,
+        id_appartement: parseInt(id),
+        date_depart: startDate.toISOString(),
+        date_sortie: endDate.toISOString(),
+        etat: "Pending",
+        nbr_adultes: parseInt(reservationDetails.adults),
+        nbr_enfants: parseInt(reservationDetails.children),
+        animaux: reservationDetails.pets > 0,
+        id_paiement: paiement.id,
+      };
+  console.log("id dyal paiement ",paiement.id);
+      console.log("Sending reservation request:", JSON.stringify(reservationDto, null, 2));
+  
+      const response = await fetch('http://localhost:5276/api/Reservation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify( reservationDto ) 
+      });
+  
+      const data = await response.text(); // First get the response as text
+      try {
+        const jsonData = JSON.parse(data); // Try to parse it as JSON
+        if (!response.ok) {
+          throw new Error(jsonData.message || 'Failed to create reservation');
         }
-    }
-    return true;
-  };
-
-  const handleDateSelection = (selectedDate) => {
-    if (!isDateValid(selectedDate, unavailableDates, startDate)) {
-      alert("Invalid date selection. Make sure the dates are consecutive and not unavailable.");
-      return;
-    }
-
-    if (!startDate) {
-      setStartDate(selectedDate);
-    } else {
-      setEndDate(selectedDate);
+        console.log("Reservation created successfully:", jsonData);
+        return jsonData;
+      } catch (parseError) {
+        throw new Error(data || 'Failed to create reservation');
+      }
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+      throw error;
     }
   };
+  
 
-  const handleImageLoad = () => {
-    setImageLoading(false); // Set loading to false when the image is loaded
-  };
-
-  const handleReserveClick = () => {
-    setReservationModalOpen(true); // Open the reservation modal
-  };
-
-  const handleReservationConfirm = (details) => {
-    setReservationDetails(details); // Set reservation details
-    setReservationModalOpen(false); // Close reservation modal
-    setMessagingModalOpen(true); // Open messaging modal
+  const handleReservationConfirm = async (details) => {
+    try {
+      setReservationDetails(details);
+      if (!startDate || !endDate) {
+        alert("Please select check-in and check-out dates.");
+        return;
+      }
+      await createReservation(details);
+      setReservationModalOpen(false);
+      setMessagingModalOpen(true);
+    } catch (error) {
+      alert('Failed to create reservation: ' + error.message);
+    }
   };
 
   if (loading) return <div className="loading">Loading apartment details...</div>;
@@ -126,7 +174,7 @@ const ApartmentDetail = () => {
         <>
           <h1 className="apartment-title">{apartment.titre}</h1>
           <div className="apartment-images">
-            <Carousel 
+          <Carousel 
               showArrows={true} 
               infiniteLoop={true} 
               autoPlay={true} 
@@ -192,32 +240,27 @@ const ApartmentDetail = () => {
             <strong> Description:</strong>
             <p>{apartment.description}</p>
           </div>
+
+          <BookingCalendar 
+  unavailableDates={unavailableDates}
+  onDateSelect={handleDateSelect}
+  selectedStartDate={startDate}
+  selectedEndDate={endDate}
+/>
+<div className="date-selection">
+  <p><strong>Selected Check-in Date:</strong> {startDate ? startDate.toDateString() : "Not selected"}</p>
+  <p><strong>Selected Check-out Date:</strong> {endDate ? endDate.toDateString() : "Not selected"}</p>
+</div> 
           
-          {apartment && unavailableDates.length > 0 ? (
-            <BookingCalendar unavailableDates={unavailableDates} />
-          ) : (
-            <p>No unavailable dates found.</p>
-          )}
           
-          <button className="reserve-button" onClick={handleReserveClick}>Reserve</button>
+                 <button className="reserve-button" onClick={() => setReservationModalOpen(true)}>Reserve</button>
         </>
       ) : (
         <div>No apartment details available</div>
       )}
 
-      {isReservationModalOpen && (
-        <ReservationModal 
-          onConfirm={handleReservationConfirm} 
-          onClose={() => setReservationModalOpen(false)} 
-        />
-      )}
-
-      {isMessagingModalOpen && (
-        <MessagingModal 
-          reservationDetails={reservationDetails} 
-          onClose={() => setMessagingModalOpen(false)} 
-        />
-      )}
+      {isReservationModalOpen && <ReservationModal onConfirm={handleReservationConfirm} onClose={() => setReservationModalOpen(false)} />}
+      {isMessagingModalOpen && <MessagingModal reservationDetails={reservationDetails} onClose={() => setMessagingModalOpen(false)} />}
     </div>
   );
 };

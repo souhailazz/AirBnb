@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
-const BookingCalendar = ({ unavailableDates }) => {
+const BookingCalendar = ({ unavailableDates, onDateSelect }) => {
   const [dates, setDates] = useState([new Date(), new Date()]);
 
   // Convert unavailable dates (string format) into Date objects
@@ -19,6 +19,7 @@ const BookingCalendar = ({ unavailableDates }) => {
   const onChange = (newDates) => {
     if (Array.isArray(newDates) && newDates.length === 2) {
       setDates(newDates);
+      onDateSelect(newDates[0], newDates[1]); // Call the callback with the selected dates
     }
   };
 
