@@ -25,11 +25,46 @@ function App() {
   const [apartments, setApartments] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // useNavigate is now inside the Router context
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAllApartments();
-  }, []);
+    // Parse query parameters from URL on initial load
+    const queryParams = new URLSearchParams(location.search);
+    const locationParam = queryParams.get('location');
+    const adultsParam = queryParams.get('adults');
+    const childrenParam = queryParams.get('children');
+    const petsParam = queryParams.get('pets');
+    
+    // Only fetch with params if at least one parameter exists
+    if (locationParam || adultsParam || childrenParam || petsParam === 'true') {
+      const searchParams = {
+        location: locationParam || "",
+        adults: adultsParam || "",
+        children: childrenParam || "",
+        pets: petsParam === 'true'
+      };
+      handleSearch(searchParams);
+    } else {
+      fetchAllApartments();
+    }
+  }, [location.search]);
+
+  const handleSearch = (searchParams) => {
+    // Build query string based on search parameters
+    const queryParams = new URLSearchParams();
+    
+    if (searchParams.location) queryParams.append('location', searchParams.location);
+    if (searchParams.adults) queryParams.append('adults', searchParams.adults);
+    if (searchParams.children) queryParams.append('children', searchParams.children);
+    if (searchParams.pets) queryParams.append('pets', 'true');
+    
+    // Update URL with search parameters
+    navigate(`/?${queryParams.toString()}`);
+    
+    // Fetch apartments based on search parameters
+    const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+    fetchAllApartments(queryString);
+  };
 
   const handleUserClick = () => {
     const userId = sessionStorage.getItem('userId'); // Retrieve the userId from sessionStorage
@@ -113,7 +148,7 @@ navigate('/Chat');
           <LanguageSelector />
         </div>
         <div className="search-bar">
-          <SearchBar />
+        <SearchBar onSearch={handleSearch} />
         </div>
 
         {sessionStorage.getItem('userId') && (
