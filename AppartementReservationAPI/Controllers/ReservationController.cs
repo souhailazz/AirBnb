@@ -142,7 +142,7 @@ public async Task<IActionResult> UpdateReservationStatus(int id, [FromBody] Rese
             return NotFound(new { message = "Reservation not found" });
         }
         
-        reservation.etat = statusDto.etat;
+        reservation.etat = statusDto.Etat;
         
         await _context.SaveChangesAsync();
         

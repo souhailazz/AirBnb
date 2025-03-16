@@ -48,6 +48,6 @@ public class Reservation
 }
   public class ReservationStatusDto
     {
-        public string etat { get; set; }
+        public string Etat { get; set; }
     }
 }
