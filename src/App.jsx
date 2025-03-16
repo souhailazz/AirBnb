@@ -9,8 +9,9 @@ import Signup from './components/Signup';
 import MyReservations from './components/MyReservations';
 import './i18n';
 import ApartmentDetail from './components/ApartmentDetail'; // New component for apartment details
-import { FaUser, FaHome, FaSignOutAlt } from 'react-icons/fa'; // Import FaUser, FaHome, and FaSignOutAlt for icons
+import { FaComments,FaUser, FaHome, FaSignOutAlt } from 'react-icons/fa'; // Import FaUser, FaHome, and FaSignOutAlt for icons
 import './app.css';
+import Chat from './components/Chat';
 
 function AppWrapper() {
   return (
@@ -51,6 +52,10 @@ function App() {
   const handleHomeClick = () => {
     navigate('/'); // Navigate to the root path
   };
+  const handleChatClick =() =>{
+
+navigate('/Chat');
+  };
 
   const fetchAllApartments = async (params = '') => {
     setLoading(true);
@@ -83,9 +88,21 @@ function App() {
     <div className="App">
       <header className="header">
         <div className="home-button" onClick={handleHomeClick}>
-          <FaHome className="home-icon" /><span className="profile-text">
+          <FaHome className="home-icon" />  <span className="profile-text">
           Home </span>
         </div>
+
+
+
+        <div className="home-button" onClick={handleChatClick}>
+          <FaComments className="Chat" /><span className="profile-text">
+          Chat </span>
+        </div>
+
+
+
+
+
         <div className="profile-icon" onClick={handleUserClick}>
           <a className="profile-link">
             <FaUser className="user-icon" />
@@ -98,6 +115,7 @@ function App() {
         <div className="search-bar">
           <SearchBar />
         </div>
+
         {sessionStorage.getItem('userId') && (
           <button className="disconnect-button" onClick={() => {
             sessionStorage.removeItem('userId');
@@ -106,6 +124,7 @@ function App() {
             <FaSignOutAlt className="disconnect-icon" /> Disconnect
           </button>
         )}
+
       </header>
       {loading && <p>Loading apartments...</p>}
 
@@ -128,6 +147,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/MyReservations" element={<MyReservations />} />
+        <Route path="/Chat" element={<Chat/>} />
+
       </Routes>
     </div>
   );

@@ -27,6 +27,8 @@ function Login() {
                 console.log(response.data.id);
                 navigate('/');
             }
+
+
         } catch (error) {
             console.error('Login failed:', error.response ? error.response.data : error.message);
             setError('Invalid credentials. Please try again.');

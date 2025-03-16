@@ -111,5 +111,77 @@ public async Task<IActionResult> CreateReservation([FromBody] ReservationDto res
     }
 }
     
-    
+    [HttpGet("{id}")]
+public async Task<IActionResult> GetReservation(int id)
+{
+    try
+    {
+        var reservation = await _context.Reservation.FindAsync(id);
+        
+        if (reservation == null)
+        {
+            return NotFound(new { message = "Reservation not found" });
+        }
+        
+        return Ok(reservation);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "Error fetching reservation: " + ex.Message });
+    }
+}
+[HttpPut("{id}/status")]
+public async Task<IActionResult> UpdateReservationStatus(int id, [FromBody] ReservationStatusDto statusDto)
+{
+    try
+    {
+        var reservation = await _context.Reservation.FindAsync(id);
+        
+        if (reservation == null)
+        {
+            return NotFound(new { message = "Reservation not found" });
+        }
+        
+        reservation.etat = statusDto.etat;
+        
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { message = "Reservation status updated successfully" });
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "Error updating reservation status: " + ex.Message });
+    }
+}
+
+[HttpGet("recent/{userId}")]
+public async Task<IActionResult> GetRecentReservation(string userId)
+{
+    try
+    {
+        // Convert userId to int
+        if (!int.TryParse(userId, out int userIdInt))
+        {
+            return BadRequest(new { message = "Invalid user ID format" });
+        }
+
+        var reservation = await _context.Reservation
+            .Where(r => r.id_client == userIdInt) // Use the converted int value
+            .OrderByDescending(r => r.id_reservation) // Use the correct property name
+            .FirstOrDefaultAsync();
+        
+        if (reservation == null)
+        {
+            return NotFound(new { message = "No reservation found for this user" });
+        }
+        
+        return Ok(reservation);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "An error occurred", details = ex.Message });
+    }
+}
+
+
 }

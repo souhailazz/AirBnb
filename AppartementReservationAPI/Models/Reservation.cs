@@ -46,4 +46,8 @@ public class Reservation
 
     public virtual Paiement Paiement { get; set; } 
 }
+  public class ReservationStatusDto
+    {
+        public string etat { get; set; }
+    }
 }

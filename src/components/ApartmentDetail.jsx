@@ -9,7 +9,7 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import ReservationModal from './ReservationModal';
 import MessagingModal from './MessagingModal';
-const sessionId = sessionStorage.getItem('userId'); // Retrieve session ID dynamically
+const sessionId = sessionStorage.getItem('userId'); 
 
 const ApartmentDetail = () => {
   const { id } = useParams();
@@ -23,7 +23,35 @@ const ApartmentDetail = () => {
   const [isMessagingModalOpen, setMessagingModalOpen] = useState(false);
   const [reservationDetails, setReservationDetails] = useState({ adults: 0, children: 0, pets: 0 });
   const [imageLoading, setImageLoading] = useState(true); // New state for image loading
-
+  const [currentReservationId, setCurrentReservationId] = useState(null);
+  const fetchRecentReservationId = async () => {
+    try {
+      if (!sessionId) {
+        console.error("No session ID available");
+        return null;
+      }
+      
+      const response = await fetch(`http://localhost:5276/api/Reservation/recent/${sessionId}`);
+      if (!response.ok) {
+        throw new Error(`Error fetching recent reservation: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Recent reservation data:", data);
+      
+      // Check if we got valid data with id_reservation field
+      if (data && data.id_reservation) {
+        setCurrentReservationId(data.id_reservation);
+        return data.id_reservation;
+      } else {
+        console.error("No reservation ID found in response:", data);
+        return null;
+      }
+    } catch (err) {
+      console.error("Error fetching recent reservation:", err);
+      return null;
+    }
+  };
   useEffect(() => {
     fetchApartmentDetails(id);
     fetchApartmentAvailability(id);
@@ -111,7 +139,7 @@ const ApartmentDetail = () => {
   
       // Create reservation DTO
       const reservationDto  = {
-        id_client: 1,
+        id_client: sessionId,
         id_appartement: parseInt(id),
         date_depart: startDate.toISOString(),
         date_sortie: endDate.toISOString(),
@@ -148,8 +176,59 @@ const ApartmentDetail = () => {
       throw error;
     }
   };
-  
-
+  const sendAdminMessage = async (reservationId, reservationDetails) => {
+    try {
+      const adminId = 1; // Admin ID
+      
+      // If no reservationId was passed, fetch the most recent one
+      if (!reservationId) {
+        reservationId = await fetchRecentReservationId();
+      }
+      
+      // Check if we have a valid reservation ID
+      if (!reservationId || isNaN(parseInt(reservationId))) {
+        throw new Error(`Invalid reservation ID: ${reservationId}`);
+      }
+      
+      // Simple message content
+      const messageContent = `New reservation request #${reservationId}:\n` +
+        `Apartment: #${id}\n` +
+        `Check-in: ${startDate ? startDate.toDateString() : 'Not specified'}\n` +
+        `Check-out: ${endDate ? endDate.toDateString() : 'Not specified'}\n` +
+        `Adults: ${reservationDetails.adults}\n` +
+        `Children: ${reservationDetails.children}\n` +
+        `Pets: ${reservationDetails.pets > 0 ? 'Yes' : 'No'}\n` +
+        `Please review this reservation.`;
+      
+      // Format the message data as expected by the API - using the same format as in Chat.jsx
+      const messageData = {
+        reservationId: parseInt(reservationId),
+        senderId: parseInt(sessionId) || 1,
+        receiverId: adminId,
+        content: messageContent
+      };
+      
+      console.log("Sending message data:", messageData);
+      
+      const response = await fetch("http://localhost:5276/api/message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(messageData)
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to send message to admin: ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log("Message sent to admin successfully:", result);
+      return true;
+    } catch (error) {
+      console.error("Error sending message to admin:", error);
+      return false;
+    }
+  };
   const handleReservationConfirm = async (details) => {
     try {
       setReservationDetails(details);
@@ -157,10 +236,24 @@ const ApartmentDetail = () => {
         alert("Please select check-in and check-out dates.");
         return;
       }
-      await createReservation(details);
+      
+      // Create the reservation only once and save the response
+      const reservationResponse = await createReservation(details);
+      console.log("Reservation created:", reservationResponse);
+      
+      // Use id_reservation from the response if available, otherwise fetch the most recent
+      let reservationId = reservationResponse && reservationResponse.id_reservation 
+        ? reservationResponse.id_reservation 
+        : null;
+      
+      // Send message to admin with reservation details
+      const messageSent = await sendAdminMessage(reservationId, details);
+      console.log("Message sent status:", messageSent);
+      
       setReservationModalOpen(false);
       setMessagingModalOpen(true);
     } catch (error) {
+      console.error("Reservation error:", error);
       alert('Failed to create reservation: ' + error.message);
     }
   };
@@ -258,9 +351,8 @@ const ApartmentDetail = () => {
       ) : (
         <div>No apartment details available</div>
       )}
-
-      {isReservationModalOpen && <ReservationModal onConfirm={handleReservationConfirm} onClose={() => setReservationModalOpen(false)} />}
-      {isMessagingModalOpen && <MessagingModal reservationDetails={reservationDetails} onClose={() => setMessagingModalOpen(false)} />}
+ {isReservationModalOpen && <ReservationModal onConfirm={handleReservationConfirm} onClose={() => setReservationModalOpen(false)} />}
+ {isMessagingModalOpen && <MessagingModal reservationDetails={reservationDetails} onClose={() => setMessagingModalOpen(false)} />}
     </div>
   );
 };

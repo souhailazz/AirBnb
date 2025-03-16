@@ -9,6 +9,8 @@ namespace AppartementReservationAPI.Data
         public DbSet<Client> Client { get; set; }
         public DbSet<Reservation> Reservation { get; set; }
         public DbSet<Paiement> Paiement { get; set; }
+        public DbSet<Message> Message { get; set; }
+
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

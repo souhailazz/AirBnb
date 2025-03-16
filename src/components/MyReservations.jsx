@@ -26,7 +26,6 @@ const MyReservations = () => {
             } catch (error) {
                 console.error("Error fetching reservations:", error);
                 if (error.response && error.response.status === 401) {
-                    // If the session is invalid or unauthorized, redirect to login
                     navigate('/login');
                 }
             }
