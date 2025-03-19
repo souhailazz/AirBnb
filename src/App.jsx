@@ -67,20 +67,44 @@ function App() {
   };
 
   const handleUserClick = () => {
-    const userId = sessionStorage.getItem('userId'); // Retrieve the userId from sessionStorage
-
+    const userId = sessionStorage.getItem('userId');
+    console.log("UserId from session:", userId); // Debugging
+  
     if (!userId) {
-      navigate('/login'); // Redirect to login if no userId exists
+      navigate('/login');
     } else {
+      // Navigate first, then fetch data
       navigate('/MyReservations');
-      // Fetch reservations for the logged-in user
-      fetch(`http://localhost:5276/api/reservations/${userId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          navigate('/MyReservations');
+      
+      fetch(`http://localhost:5276/api/Reservation/reservations/${userId}`)
+      .then(response => {
+          console.log("Response status:", response.status);
+          if (!response.ok) {
+            return response.text().then(text => {
+              throw new Error(`Server error (${response.status}): ${text || "No error details"}`);
+            });
+          }
+          return response.text().then(text => {
+            if (!text) {
+              console.log("Empty response received");
+              return [];
+            }
+            try {
+              return JSON.parse(text);
+            } catch (e) {
+              console.error("Invalid JSON:", text);
+              throw new Error("Invalid JSON response");
+            }
+          });
         })
-        .catch((error) => console.error('Error fetching reservations:', error));
+        .then(data => {
+          console.log("Reservation data:", data);
+          // Don't navigate again, we already did
+        })
+        .catch(error => {
+          console.error('Error fetching reservations:', error);
+          // Perhaps show an error message to the user
+        });
     }
   };
 
