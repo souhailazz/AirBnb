@@ -1,13 +1,14 @@
-
-import { useState, useEffect } from "react"
-import axios from "axios"
-import "./Admin.css" // Import the CSS file
+import { useState, useEffect } from "react";
+import axios from "axios";
+import "./Admin.css"; // Import the CSS file
 
 const Admin = () => {
-  const [apartments, setApartments] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [successMessage, setSuccessMessage] = useState("")
+  const [apartments, setApartments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -45,73 +46,92 @@ const Admin = () => {
     depart_instructions: "",
     regles_maison: "",
     photos: [{ photo_url: "" }],
-  })
+  });
 
   // Fetch existing apartments
   useEffect(() => {
-    fetchApartments()
-  }, [])
+    fetchApartments();
+  }, []);
 
   const fetchApartments = async () => {
     try {
-      setLoading(true)
-      const response = await axios.get("http://localhost:5276/api/Apartments")
-      setApartments(response.data)
-      setLoading(false)
+      setLoading(true);
+      const response = await axios.get("http://localhost:5276/api/Apartments");
+      setApartments(response.data);
+      setLoading(false);
     } catch (err) {
-      setError("Failed to fetch apartments")
-      setLoading(false)
-      console.error("Error fetching apartments:", err)
+      setError("Failed to fetch apartments");
+      setLoading(false);
+      console.error("Error fetching apartments:", err);
     }
-  }
+  };
 
   // Handle form input changes
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
 
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
-    }))
-  }
+    }));
+  };
 
   // Handle photo URL changes
   const handlePhotoChange = (index, value) => {
-    const updatedPhotos = [...formData.photos]
-    updatedPhotos[index] = { photo_url: value }
+    const updatedPhotos = [...formData.photos];
+    updatedPhotos[index] = { photo_url: value };
 
     setFormData((prev) => ({
       ...prev,
       photos: updatedPhotos,
-    }))
-  }
+    }));
+  };
 
   // Add new photo field
-  const addPhotoField = () => {
+  const handleAddPhotoField = () => {
     setFormData((prev) => ({
       ...prev,
       photos: [...prev.photos, { photo_url: "" }],
-    }))
-  }
+    }));
+  };
 
   // Remove photo field
-  const removePhotoField = (index) => {
+  const handleRemovePhotoField = (index) => {
     if (formData.photos.length > 1) {
-      const updatedPhotos = formData.photos.filter((_, i) => i !== index)
+      const updatedPhotos = formData.photos.filter((_, i) => i !== index);
 
       setFormData((prev) => ({
         ...prev,
         photos: updatedPhotos,
-      }))
+      }));
     }
-  }
+  };
+
+  // Move to next step
+  const handleNextStep = () => {
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  // Move to previous step
+  const handlePrevStep = () => {
+    setCurrentStep((prev) => prev - 1);
+  };
+
+  // Toggle form visibility
+  const toggleFormVisibility = () => {
+    setShowForm(!showForm);
+    // Reset form and step when toggling
+    if (!showForm) {
+      setCurrentStep(1);
+    }
+  };
 
   // Submit form to create apartment
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
-      setLoading(true)
+      setLoading(true);
 
       // Transform the data to match the API's expected format
       const submitData = {
@@ -150,15 +170,15 @@ const Admin = () => {
         depart_instructions: formData.depart_instructions,
         regles_maison: formData.regles_maison,
         photos: formData.photos.filter((photo) => photo.photo_url.trim() !== ""),
-      }
+      };
 
       // Send the data to the API
-      const response = await axios.post("http://localhost:5276/api/Apartments", submitData)
+      const response = await axios.post("http://localhost:5276/api/Apartments", submitData);
 
-      console.log("Apartment created:", response.data)
-      setSuccessMessage("Apartment created successfully!")
+      console.log("Apartment created:", response.data);
+      setSuccessMessage("Apartment created successfully!");
 
-      // Reset the form
+      // Reset the form and hide it
       setFormData({
         titre: "",
         description: "",
@@ -194,89 +214,59 @@ const Admin = () => {
         depart_instructions: "",
         regles_maison: "",
         photos: [{ photo_url: "" }],
-      })
+      });
+      setShowForm(false);
+      setCurrentStep(1);
 
       // Refresh apartment list
-      fetchApartments()
+      fetchApartments();
 
       // Clear success message after 5 seconds
       setTimeout(() => {
-        setSuccessMessage("")
-      }, 5000)
+        setSuccessMessage("");
+      }, 5000);
 
-      setLoading(false)
+      setLoading(false);
     } catch (err) {
-      setLoading(false)
-      setError("Failed to create apartment")
-      console.error("Error creating apartment:", err)
+      setLoading(false);
+      setError("Failed to create apartment");
+      console.error("Error creating apartment:", err);
     }
-  }
+  };
 
   // Delete apartment
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this apartment?")) {
       try {
-        setLoading(true)
-        await axios.delete(`http://localhost:5276/api/Apartments/${id}`)
+        setLoading(true);
+        await axios.delete(`http://localhost:5276/api/Apartments/${id}`);
 
         // Refresh apartment list
-        fetchApartments()
+        fetchApartments();
 
-        setSuccessMessage("Apartment deleted successfully!")
+        setSuccessMessage("Apartment deleted successfully!");
 
         // Clear success message after 5 seconds
         setTimeout(() => {
-          setSuccessMessage("")
-        }, 5000)
+          setSuccessMessage("");
+        }, 5000);
 
-        setLoading(false)
+        setLoading(false);
       } catch (err) {
-        setLoading(false)
-        setError("Failed to delete apartment")
-        console.error("Error deleting apartment:", err)
+        setLoading(false);
+        setError("Failed to delete apartment");
+        console.error("Error deleting apartment:", err);
       }
     }
-  }
+  };
 
-  return (
-    <div className="container">
-      <h1>Apartment Administration</h1>
-
-      {/* Success Message */}
-      {successMessage && (
-        <div className="alert alert-success">
-          <svg className="alert-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          {successMessage}
-        </div>
-      )}
-
-      {/* Error Message */}
-      {error && (
-        <div className="alert alert-error">
-          <svg className="alert-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-          {error}
-        </div>
-      )}
-
-      {/* Create Apartment Form */}
-      <div className="card">
-        <h2>Add New Apartment</h2>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-grid">
-            {/* Basic Information */}
-            <div className="col-span-2">
-              <h3>Basic Information</h3>
-            </div>
+  // Render form steps
+  const renderFormStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="form-step">
+            <h3 className="step-title">Step 1: Basic Information</h3>
 
             <div className="form-group">
               <label className="form-label">Title</label>
@@ -302,7 +292,7 @@ const Admin = () => {
               />
             </div>
 
-            <div className="form-group col-span-2">
+            <div className="form-group">
               <label className="form-label">Address</label>
               <input
                 type="text"
@@ -314,7 +304,7 @@ const Admin = () => {
               />
             </div>
 
-            <div className="form-group col-span-2">
+            <div className="form-group">
               <label className="form-label">Description</label>
               <textarea
                 name="description"
@@ -326,10 +316,69 @@ const Admin = () => {
               ></textarea>
             </div>
 
-            {/* Pricing and Capacity */}
-            <div className="col-span-2">
-              <h3>Pricing and Capacity</h3>
+            <div className="form-group">
+              <label className="form-label">Surface Area (m²)</label>
+              <input
+                type="number"
+                name="surface"
+                value={formData.surface}
+                onChange={handleInputChange}
+                className="form-input"
+                min="0"
+              />
             </div>
+
+            <div className="form-group">
+              <label className="form-label">Balcony Surface (m²)</label>
+              <input
+                type="number"
+                name="balcon_surface"
+                value={formData.balcon_surface}
+                onChange={handleInputChange}
+                className="form-input"
+                min="0"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Latitude</label>
+              <input
+                type="number"
+                name="latitude"
+                value={formData.latitude}
+                onChange={handleInputChange}
+                className="form-input"
+                step="0.000001"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Longitude</label>
+              <input
+                type="number"
+                name="longitude"
+                value={formData.longitude}
+                onChange={handleInputChange}
+                className="form-input"
+                step="0.000001"
+              />
+            </div>
+
+            <div className="form-actions">
+              <button type="button" onClick={toggleFormVisibility} className="btn btn-secondary">
+                Cancel
+              </button>
+              <button type="button" onClick={handleNextStep} className="btn btn-primary">
+                Next Step
+              </button>
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="form-step">
+            <h3 className="step-title">Step 2: Pricing and Amenities</h3>
 
             <div className="form-group">
               <label className="form-label">Price (€/night)</label>
@@ -434,60 +483,6 @@ const Admin = () => {
               />
             </div>
 
-            {/* Property Details */}
-            <div className="col-span-2">
-              <h3>Property Details</h3>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Surface Area (m²)</label>
-              <input
-                type="number"
-                name="surface"
-                value={formData.surface}
-                onChange={handleInputChange}
-                className="form-input"
-                min="0"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Balcony Surface (m²)</label>
-              <input
-                type="number"
-                name="balcon_surface"
-                value={formData.balcon_surface}
-                onChange={handleInputChange}
-                className="form-input"
-                min="0"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Latitude</label>
-              <input
-                type="number"
-                name="latitude"
-                value={formData.latitude}
-                onChange={handleInputChange}
-                className="form-input"
-                step="0.000001"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Longitude</label>
-              <input
-                type="number"
-                name="longitude"
-                value={formData.longitude}
-                onChange={handleInputChange}
-                className="form-input"
-                step="0.000001"
-              />
-            </div>
-
-            {/* Check-in/Check-out */}
             <div className="form-group">
               <label className="form-label">Check-in Time</label>
               <input
@@ -510,176 +505,183 @@ const Admin = () => {
               />
             </div>
 
-            {/* Amenities */}
-            <div className="col-span-2">
-              <h3>Amenities</h3>
-              <div className="checkbox-grid">
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="accepteAnimaux"
-                      checked={formData.accepteAnimaux}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>Pets Allowed</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="chauffage"
-                      checked={formData.chauffage}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>Heating</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="wifi"
-                      checked={formData.wifi}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>WiFi</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="television"
-                      checked={formData.television}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>TV</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="lave_Linge"
-                      checked={formData.lave_Linge}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>Washing Machine</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="seche_cheveux"
-                      checked={formData.seche_cheveux}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>Hair Dryer</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="cuisine_equipee"
-                      checked={formData.cuisine_equipee}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>Equipped Kitchen</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="parking_payant"
-                      checked={formData.parking_payant}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>Paid Parking</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="petit_dejeuner_inclus"
-                      checked={formData.petit_dejeuner_inclus}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>Breakfast Included</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="lit_parapluie"
-                      checked={formData.lit_parapluie}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>Baby Crib</span>
-                  </label>
-                </div>
-
-                <div className="form-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="menage_disponible"
-                      checked={formData.menage_disponible}
-                      onChange={handleInputChange}
-                      className="form-checkbox"
-                    />
-                    <span>Cleaning Service</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* If Pets Allowed */}
-            {formData.accepteAnimaux && (
+            <h4>Amenities</h4>
+            <div className="checkbox-grid">
               <div className="form-group">
-                <label className="form-label">Max Number of Pets</label>
-                <input
-                  type="number"
-                  name="max_animaux"
-                  value={formData.max_animaux}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  min="1"
-                />
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="accepteAnimaux"
+                    checked={formData.accepteAnimaux}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>Pets Allowed</span>
+                </label>
               </div>
-            )}
 
-            {/* House Rules and Policies */}
-            <div className="col-span-2">
-              <h3>House Rules and Policies</h3>
+              {formData.accepteAnimaux && (
+                <div className="form-group">
+                  <label className="form-label">Max Number of Pets</label>
+                  <input
+                    type="number"
+                    name="max_animaux"
+                    value={formData.max_animaux}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    min="1"
+                  />
+                </div>
+              )}
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="chauffage"
+                    checked={formData.chauffage}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>Heating</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="wifi"
+                    checked={formData.wifi}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>WiFi</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="television"
+                    checked={formData.television}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>TV</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="lave_Linge"
+                    checked={formData.lave_Linge}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>Washing Machine</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="seche_cheveux"
+                    checked={formData.seche_cheveux}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>Hair Dryer</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="cuisine_equipee"
+                    checked={formData.cuisine_equipee}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>Equipped Kitchen</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="parking_payant"
+                    checked={formData.parking_payant}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>Paid Parking</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="petit_dejeuner_inclus"
+                    checked={formData.petit_dejeuner_inclus}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>Breakfast Included</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="lit_parapluie"
+                    checked={formData.lit_parapluie}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>Baby Crib</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="menage_disponible"
+                    checked={formData.menage_disponible}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <span>Cleaning Service</span>
+                </label>
+              </div>
             </div>
 
-            <div className="form-group col-span-2">
+            <div className="form-actions">
+              <button type="button" onClick={handlePrevStep} className="btn btn-secondary">
+                Previous Step
+              </button>
+              <button type="button" onClick={handleNextStep} className="btn btn-primary">
+                Next Step
+              </button>
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="form-step">
+            <h3 className="step-title">Step 3: Rules and Photos</h3>
+
+            <div className="form-group">
               <label className="form-label">House Rules</label>
               <textarea
                 name="regles_maison"
@@ -690,7 +692,7 @@ const Admin = () => {
               ></textarea>
             </div>
 
-            <div className="form-group col-span-2">
+            <div className="form-group">
               <label className="form-label">Departure Instructions</label>
               <textarea
                 name="depart_instructions"
@@ -701,7 +703,7 @@ const Admin = () => {
               ></textarea>
             </div>
 
-            <div className="form-group col-span-2">
+            <div className="form-group">
               <label className="form-label">Cancellation Policy</label>
               <textarea
                 name="politique_annulation"
@@ -712,50 +714,48 @@ const Admin = () => {
               ></textarea>
             </div>
 
-            {/* Photo URLs */}
-            <div className="col-span-2">
-              <h3>Photos</h3>
+            <h4>Photos</h4>
+            {formData.photos.map((photo, index) => (
+              <div key={index} className="photo-input-group">
+                <input
+                  type="text"
+                  value={photo.photo_url}
+                  onChange={(e) => handlePhotoChange(index, e.target.value)}
+                  placeholder="Photo URL"
+                  className="form-input"
+                />
 
-              {formData.photos.map((photo, index) => (
-                <div key={index} className="photo-input-group">
-                  <input
-                    type="text"
-                    value={photo.photo_url}
-                    onChange={(e) => handlePhotoChange(index, e.target.value)}
-                    placeholder="Photo URL"
-                    className="form-input"
-                  />
+                <button
+                  type="button"
+                  onClick={() => handleRemovePhotoField(index)}
+                  className="btn btn-danger btn-icon"
+                  disabled={formData.photos.length === 1}
+                >
+                  <svg className="mr-1" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Remove
+                </button>
+              </div>
+            ))}
 
-                  <button
-                    type="button"
-                    onClick={() => removePhotoField(index)}
-                    className="btn btn-danger btn-icon"
-                    disabled={formData.photos.length === 1}
-                  >
-                    <svg className="mr-1" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                    Remove
-                  </button>
-                </div>
-              ))}
+            <button type="button" onClick={handleAddPhotoField} className="btn btn-primary btn-icon">
+              <svg className="mr-1" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Photo
+            </button>
 
-              <button type="button" onClick={addPhotoField} className="btn btn-primary btn-icon">
-                <svg className="mr-1" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Add Photo
+            <div className="form-actions mt-6">
+              <button type="button" onClick={handlePrevStep} className="btn btn-secondary">
+                Previous Step
               </button>
-            </div>
-
-            {/* Submit Button */}
-            <div className="col-span-2 mt-6">
-              <button type="submit" className="btn btn-success btn-lg btn-icon" disabled={loading}>
+              <button type="submit" className="btn btn-success btn-icon" disabled={loading}>
                 {loading ? (
                   <>
                     <svg
@@ -789,7 +789,7 @@ const Admin = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                        d="M5 13l4 4L19 7"
                       />
                     </svg>
                     Create Apartment
@@ -798,14 +798,92 @@ const Admin = () => {
               </button>
             </div>
           </div>
-        </form>
-      </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1>Apartment Administration</h1>
+
+      {/* Success Message */}
+      {successMessage && (
+        <div className="alert alert-success">
+          <svg className="alert-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          {successMessage}
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="alert alert-error">
+          <svg className="alert-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          {error}
+        </div>
+      )}
+
+      {/* Add Apartment Button */}
+      {!showForm && (
+        <button
+          type="button"
+          onClick={toggleFormVisibility}
+          className="btn btn-primary btn-lg btn-icon mb-6"
+        >
+          <svg className="mr-2" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+          Add New Apartment
+        </button>
+      )}
+
+      {/* Multi-step Form */}
+      {showForm && (
+        <div className="card">
+          <div className="steps-indicator">
+            <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
+              <div className="step-number">1</div>
+              <div className="step-title">Basic Info</div>
+            </div>
+            <div className="step-connector"></div>
+            <div className={`step ${currentStep >= 2 ? "active" : ""}`}>
+              <div className="step-number">2</div>
+              <div className="step-title">Pricing & Amenities</div>
+            </div>
+            <div className="step-connector"></div>
+            <div className={`step ${currentStep >= 3 ? "active" : ""}`}>
+              <div className="step-number">3</div>
+              <div className="step-title">Rules & Photos</div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            {renderFormStep()}
+          </form>
+        </div>
+      )}
 
       {/* List of Apartments */}
-      <div className="card">
+      <div className="card mt-6">
         <h2>Existing Apartments</h2>
 
-        {loading ? (
+        {loading && !showForm ? (
           <p>Loading apartments...</p>
         ) : apartments.length > 0 ? (
           <div className="table-container">
@@ -858,8 +936,7 @@ const Admin = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Admin
-
+export default Admin;
