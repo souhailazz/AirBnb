@@ -36,6 +36,7 @@ namespace AppartementReservationAPI.Models
     public decimal remise_mois { get; set; }
     public TimeSpan checkin_heure { get; set; }
     public TimeSpan checkout_heure { get; set; }
+
     public string politique_annulation { get; set; }
     public string depart_instructions { get; set; }
     public string regles_maison { get; set; }

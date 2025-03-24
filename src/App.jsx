@@ -7,6 +7,7 @@ import Map from './components/Map';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import MyReservations from './components/MyReservations';
+import Admin from './components/Admin';
 import './i18n';
 import ApartmentDetail from './components/ApartmentDetail'; // New component for apartment details
 import { FaComments,FaUser, FaHome, FaSignOutAlt } from 'react-icons/fa'; // Import FaUser, FaHome, and FaSignOutAlt for icons
@@ -205,6 +206,7 @@ navigate('/Chat');
         {/* Login Page */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/Admin" element={<Admin />} />
         <Route path="/MyReservations" element={<MyReservations />} />
         <Route path="/Chat" element={<Chat/>} />
 

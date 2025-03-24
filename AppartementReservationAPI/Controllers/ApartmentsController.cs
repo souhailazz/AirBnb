@@ -193,5 +193,201 @@ public async Task<ActionResult<IEnumerable<string>>> GetApartmentAvailability(in
 
             return Ok(apartments);
         }
+        // POST: api/Apartments
+// POST: api/Apartments
+[HttpPost]
+        public async Task<ActionResult<Appartement>> CreateApartment([FromBody] AppartementCreateDto dto)
+        {
+            try
+            {
+                // Validate the model
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                // Log the creation attempt
+                Console.WriteLine($"Attempting to create apartment: {JsonSerializer.Serialize(dto)}");
+
+                // Map DTO to domain model
+                var appartement = new Appartement
+                {
+                    Titre = dto.Titre,
+                    Description = dto.Description,
+                    Adresse = dto.Adresse,
+                    Ville = dto.Ville,
+                    Prix = dto.Prix,
+                    Capacite = dto.Capacite,
+                    NbrAdultes = dto.NbrAdultes,
+                    NbrEnfants = dto.NbrEnfants,
+                    AccepteAnimaux = dto.AccepteAnimaux,
+                    Latitude = dto.Latitude,
+                    Longitude = dto.Longitude,
+                    frais_menage = dto.frais_menage,
+                    max_animaux = dto.max_animaux,
+                    surface = dto.surface,
+                    balcon_surface = dto.balcon_surface,
+                    chauffage = dto.chauffage,
+                    wifi = dto.wifi,
+                    television = dto.television,
+                    lave_Linge = dto.lave_Linge,
+                    seche_cheveux = dto.seche_cheveux,
+                    cuisine_equipee = dto.cuisine_equipee,
+                    parking_payant = dto.parking_payant,
+                    petit_dejeuner_inclus = dto.petit_dejeuner_inclus,
+                    lit_parapluie = dto.lit_parapluie,
+                    menage_disponible = dto.menage_disponible,
+                    nombre_min_nuits = dto.nombre_min_nuits,
+                    remise_semaine = dto.remise_semaine,
+                    remise_mois = dto.remise_mois,
+                    checkin_heure = TimeSpan.Parse(dto.checkin_heure),
+                    checkout_heure = TimeSpan.Parse(dto.checkout_heure),
+                    politique_annulation = dto.politique_annulation,
+                    depart_instructions = dto.depart_instructions,
+                    regles_maison = dto.regles_maison,
+                    Photos = new List<AppartementPhotos>()
+                };
+
+                // Map photos if they exist
+                if (dto.Photos != null && dto.Photos.Count > 0)
+                {
+                    foreach (var photoDto in dto.Photos)
+                    {
+                        appartement.Photos.Add(new AppartementPhotos
+                        {
+                            photo_url = photoDto.photo_url
+                            // No need to set appartement_id here as EF Core will handle it
+                        });
+                    }
+                }
+
+                // Add the new apartment to the context
+                _context.Appartements.Add(appartement);
+                
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+
+                // Log successful creation
+                Console.WriteLine($"Successfully created apartment with ID: {appartement.Id}");
+
+                // Return a 201 Created response with the newly created resource
+                return CreatedAtAction(nameof(GetApartmentById), new { id = appartement.Id }, appartement);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Error creating apartment: {ex.Message}");
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+// DELETE: api/Apartments/{id}
+[HttpDelete("{id}")]
+public async Task<IActionResult> DeleteApartment(int id)
+{
+    try
+    {
+        // Log the delete attempt
+        Console.WriteLine($"Attempting to delete apartment ID {id}");
+
+        // Find the apartment
+        var apartment = await _context.Appartements
+            .Include(a => a.Photos) // Include photos to delete them too
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (apartment == null)
+        {
+            return NotFound($"Apartment with ID {id} not found.");
+        }
+
+        // Remove the apartment (and by cascade, its photos)
+        _context.Appartements.Remove(apartment);
+        
+        // Save changes to the database
+        await _context.SaveChangesAsync();
+
+        // Log successful deletion
+        Console.WriteLine($"Successfully deleted apartment ID {id} and its associated photos");
+
+        return NoContent(); // 204 No Content is the standard response for successful DELETE
     }
+    catch (Exception ex)
+    {
+        // Log the exception
+        Console.WriteLine($"Error deleting apartment: {ex.Message}");
+        return StatusCode(500, "Internal server error: " + ex.Message);
+    }
+}// PUT: api/Apartments/{id}
+[HttpPut("{id}")]
+public async Task<IActionResult> UpdateApartment(int id, [FromBody] Appartement appartement)
+{
+    try
+    {
+        // Check if the ID in the route matches the ID in the model
+        if (id != appartement.Id)
+        {
+            return BadRequest("The ID in the URL does not match the ID in the request body.");
+        }
+
+        // Validate the model
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        // Log the update attempt
+        Console.WriteLine($"Attempting to update apartment ID {id}");
+
+        // Check if the apartment exists
+        var existingApartment = await _context.Appartements
+            .Include(a => a.Photos)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (existingApartment == null)
+        {
+            return NotFound($"Apartment with ID {id} not found.");
+        }
+
+        // Update the existing apartment properties
+        // This is an alternative to _context.Entry(appartement).State = EntityState.Modified;
+        // which allows us to handle the Photos collection separately
+        _context.Entry(existingApartment).CurrentValues.SetValues(appartement);
+
+        // Note: This doesn't handle updates to the Photos collection
+        // To update photos, you would need a separate endpoint or additional logic here
+
+        // Save changes to the database
+        await _context.SaveChangesAsync();
+
+        // Log successful update
+        Console.WriteLine($"Successfully updated apartment ID {id}");
+
+        return NoContent(); // 204 No Content is the standard response for successful PUT
+    }
+    catch (DbUpdateConcurrencyException)
+    {
+        // Handle concurrency issues
+        if (!ApartmentExists(id))
+        {
+            return NotFound($"Apartment with ID {id} not found.");
+        }
+        else
+        {
+            throw;
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log the exception
+        Console.WriteLine($"Error updating apartment: {ex.Message}");
+        return StatusCode(500, "Internal server error: " + ex.Message);
+    }
+}
+
+// Helper method to check if an apartment exists
+private bool ApartmentExists(int id)
+{
+    return _context.Appartements.Any(a => a.Id == id);
+}
+    }
+    
 }
