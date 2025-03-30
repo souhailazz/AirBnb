@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using AppartementReservationAPI.Models;
 using AppartementReservationAPI.Data;
 
-namespace YourNamespace.Controllers
+namespace AppartementReservationAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -68,4 +68,6 @@ public async Task<ActionResult<Paiement>> CreatePayment(Paiement payment)
         
 
     }
+    
+    
 }
