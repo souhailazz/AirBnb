@@ -12,6 +12,7 @@ import './i18n';
 import ApartmentDetail from './components/ApartmentDetail'; // New component for apartment details
 import { FaComments,FaUser, FaHome, FaSignOutAlt } from 'react-icons/fa'; // Import FaUser, FaHome, and FaSignOutAlt for icons
 import './app.css';
+import Edit from './components/Edit';
 import Chat from './components/Chat';
 
 function AppWrapper() {
@@ -209,6 +210,8 @@ navigate('/Chat');
         <Route path="/Admin" element={<Admin />} />
         <Route path="/MyReservations" element={<MyReservations />} />
         <Route path="/Chat" element={<Chat/>} />
+        <Route path="/Edit" element={<Edit/>} />
+
 
       </Routes>
     </div>

@@ -317,17 +317,12 @@ public async Task<IActionResult> DeleteApartment(int id)
         return StatusCode(500, "Internal server error: " + ex.Message);
     }
 }// PUT: api/Apartments/{id}
+// PUT: api/Apartments/{id}
 [HttpPut("{id}")]
-public async Task<IActionResult> UpdateApartment(int id, [FromBody] Appartement appartement)
+public async Task<IActionResult> UpdateApartment(int id, [FromBody] AppartementCreateDto dto)
 {
     try
     {
-        // Check if the ID in the route matches the ID in the model
-        if (id != appartement.Id)
-        {
-            return BadRequest("The ID in the URL does not match the ID in the request body.");
-        }
-
         // Validate the model
         if (!ModelState.IsValid)
         {
@@ -347,13 +342,54 @@ public async Task<IActionResult> UpdateApartment(int id, [FromBody] Appartement 
             return NotFound($"Apartment with ID {id} not found.");
         }
 
-        // Update the existing apartment properties
-        // This is an alternative to _context.Entry(appartement).State = EntityState.Modified;
-        // which allows us to handle the Photos collection separately
-        _context.Entry(existingApartment).CurrentValues.SetValues(appartement);
+        // Update basic properties
+        existingApartment.Titre = dto.Titre;
+        existingApartment.Description = dto.Description;
+        existingApartment.Adresse = dto.Adresse;
+        existingApartment.Ville = dto.Ville;
+        existingApartment.Prix = dto.Prix;
+        existingApartment.Capacite = dto.Capacite;
+        existingApartment.NbrAdultes = dto.NbrAdultes;
+        existingApartment.NbrEnfants = dto.NbrEnfants;
+        existingApartment.AccepteAnimaux = dto.AccepteAnimaux;
+        existingApartment.Latitude = dto.Latitude;
+        existingApartment.Longitude = dto.Longitude;
+        existingApartment.frais_menage = dto.frais_menage;
+        existingApartment.max_animaux = dto.max_animaux;
+        existingApartment.surface = dto.surface;
+        existingApartment.balcon_surface = dto.balcon_surface;
+        existingApartment.chauffage = dto.chauffage;
+        existingApartment.wifi = dto.wifi;
+        existingApartment.television = dto.television;
+        existingApartment.lave_Linge = dto.lave_Linge;
+        existingApartment.seche_cheveux = dto.seche_cheveux;
+        existingApartment.cuisine_equipee = dto.cuisine_equipee;
+        existingApartment.parking_payant = dto.parking_payant;
+        existingApartment.petit_dejeuner_inclus = dto.petit_dejeuner_inclus;
+        existingApartment.lit_parapluie = dto.lit_parapluie;
+        existingApartment.menage_disponible = dto.menage_disponible;
+        existingApartment.nombre_min_nuits = dto.nombre_min_nuits;
+        existingApartment.remise_semaine = dto.remise_semaine;
+        existingApartment.remise_mois = dto.remise_mois;
+        existingApartment.checkin_heure = TimeSpan.Parse(dto.checkin_heure);
+        existingApartment.checkout_heure = TimeSpan.Parse(dto.checkout_heure);
+        existingApartment.politique_annulation = dto.politique_annulation;
+        existingApartment.depart_instructions = dto.depart_instructions;
+        existingApartment.regles_maison = dto.regles_maison;
 
-        // Note: This doesn't handle updates to the Photos collection
-        // To update photos, you would need a separate endpoint or additional logic here
+        // Handle photo updates
+        if (dto.Photos != null)
+        {
+            // Remove all existing photos
+            _context.RemoveRange(existingApartment.Photos);
+
+            // Add new photos
+            existingApartment.Photos = dto.Photos.Select(p => new AppartementPhotos
+            {
+                photo_url = p.photo_url,
+                appartement_id = id
+            }).ToList();
+        }
 
         // Save changes to the database
         await _context.SaveChangesAsync();
@@ -362,18 +398,6 @@ public async Task<IActionResult> UpdateApartment(int id, [FromBody] Appartement 
         Console.WriteLine($"Successfully updated apartment ID {id}");
 
         return NoContent(); // 204 No Content is the standard response for successful PUT
-    }
-    catch (DbUpdateConcurrencyException)
-    {
-        // Handle concurrency issues
-        if (!ApartmentExists(id))
-        {
-            return NotFound($"Apartment with ID {id} not found.");
-        }
-        else
-        {
-            throw;
-        }
     }
     catch (Exception ex)
     {

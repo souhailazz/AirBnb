@@ -87,7 +87,6 @@ const Admin = () => {
     }));
   };
 
-  // Add new photo field
   const handleAddPhotoField = () => {
     setFormData((prev) => ({
       ...prev,
@@ -95,7 +94,6 @@ const Admin = () => {
     }));
   };
 
-  // Remove photo field
   const handleRemovePhotoField = (index) => {
     if (formData.photos.length > 1) {
       const updatedPhotos = formData.photos.filter((_, i) => i !== index);
@@ -107,33 +105,27 @@ const Admin = () => {
     }
   };
 
-  // Move to next step
   const handleNextStep = () => {
     setCurrentStep((prev) => prev + 1);
   };
 
-  // Move to previous step
   const handlePrevStep = () => {
     setCurrentStep((prev) => prev - 1);
   };
 
-  // Toggle form visibility
   const toggleFormVisibility = () => {
     setShowForm(!showForm);
-    // Reset form and step when toggling
     if (!showForm) {
       setCurrentStep(1);
     }
   };
 
-  // Submit form to create apartment
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       setLoading(true);
 
-      // Transform the data to match the API's expected format
       const submitData = {
         ...formData,
         titre: formData.titre,
@@ -172,13 +164,11 @@ const Admin = () => {
         photos: formData.photos.filter((photo) => photo.photo_url.trim() !== ""),
       };
 
-      // Send the data to the API
       const response = await axios.post("http://localhost:5276/api/Apartments", submitData);
 
       console.log("Apartment created:", response.data);
       setSuccessMessage("Apartment created successfully!");
 
-      // Reset the form and hide it
       setFormData({
         titre: "",
         description: "",
@@ -218,13 +208,11 @@ const Admin = () => {
       setShowForm(false);
       setCurrentStep(1);
 
-      // Refresh apartment list
       fetchApartments();
 
-      // Clear success message after 5 seconds
       setTimeout(() => {
         setSuccessMessage("");
-      }, 5000);
+      }, 2000);
 
       setLoading(false);
     } catch (err) {
@@ -233,6 +221,66 @@ const Admin = () => {
       console.error("Error creating apartment:", err);
     }
   };
+  const handleEdit = (apartment) => {
+    setFormData({
+      ...apartment,
+      checkin_heure: apartment.checkin_heure.substring(0, 5),
+      checkout_heure: apartment.checkout_heure.substring(0, 5),
+      photos: apartment.photos || [{ photo_url: "" }],
+    });
+    setShowForm(true);
+  };
+  const handleSubmit2 = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      const submitData = {
+        ...formData,
+        prix: parseFloat(formData.prix),
+        capacite: parseInt(formData.capacite),
+        nbrAdultes: parseInt(formData.nbrAdultes),
+        nbrEnfants: parseInt(formData.nbrEnfants),
+        latitude: parseFloat(formData.latitude),
+        longitude: parseFloat(formData.longitude),
+        frais_menage: parseFloat(formData.frais_menage),
+        max_animaux: parseInt(formData.max_animaux),
+        surface: parseFloat(formData.surface),
+        balcon_surface: parseFloat(formData.balcon_surface),
+        nombre_min_nuits: parseInt(formData.nombre_min_nuits),
+        remise_semaine: parseFloat(formData.remise_semaine),
+        remise_mois: parseFloat(formData.remise_mois),
+        checkin_heure: formData.checkin_heure,
+        checkout_heure: formData.checkout_heure,
+        photos: formData.photos.filter(photo => photo.photo_url.trim() !== ""),
+      };
+  
+      let response;
+      if (formData.id) {
+        // Update existing apartment
+        response = await axios.put(`http://localhost:5276/api/Apartments/${formData.id}`, submitData);
+      } else {
+        // Create new apartment
+        response = await axios.post("http://localhost:5276/api/Apartments", submitData);
+      }
+  
+      console.log("Success:", response.data);
+      setSuccessMessage(`Apartment ${formData.id ? "updated" : "created"} successfully!`);
+      
+      setShowForm(false);
+      setCurrentStep(1);
+      setFormData(initialFormState);
+      fetchApartments();
+      
+      setTimeout(() => setSuccessMessage(""), 5000);
+    } catch (err) {
+      setError("Failed to process request");
+      console.error("Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+    
 
   // Delete apartment
   const handleDelete = async (id) => {
@@ -925,6 +973,9 @@ const Admin = () => {
                         </svg>
                         Delete
                       </button>
+                      <button onClick={() => handleEdit(apartment)} className="btn btn-warning btn-icon">
+    ✏️ Edit
+  </button>
                     </td>
                   </tr>
                 ))}
