@@ -18,7 +18,7 @@ const Edit = () => {
         setLoading(true)
 
         // Make sure to set the correct Accept header to receive JSON
-        const response = await axios.get("http://localhost:5276/api/Apartments", {
+        const response = await axios.get("https://backend-production-886a.up.railway.app/api/Apartments", {
           headers: {
             Accept: "application/json",
           },
@@ -87,7 +87,7 @@ const Edit = () => {
   const fetchApartmentDetails = async (id) => {
     try {
       setLoading(true)
-      const response = await axios.get(`http://localhost:5276/api/Apartments/${id}`, {
+      const response = await axios.get(`https://backend-production-886a.up.railway.app/api/Apartments/${id}`, {
         headers: {
           Accept: "application/json",
         },
@@ -168,7 +168,7 @@ const Edit = () => {
       }
 
       // Send update request
-      await axios.put(`http://localhost:5276/api/Apartments/${editingApartment}`, apartmentData, {
+      await axios.put(`https://backend-production-886a.up.railway.app/api/Apartments/${editingApartment}`, apartmentData, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

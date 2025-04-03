@@ -21,7 +21,7 @@ const MyReservations = () => {
 
         const fetchReservations = async () => {
             try {
-                const response = await axios.get(`http://localhost:5276/api/Reservation/reservations/${sessionId}`);
+                const response = await axios.get(`https://backend-production-886a.up.railway.app/api/Reservation/reservations/${sessionId}`);
                 setReservations(response.data);
             } catch (error) {
                 console.error("Error fetching reservations:", error);

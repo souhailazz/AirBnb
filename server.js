@@ -86,7 +86,6 @@ app.post('/api/user/login', async (req, res) => {
         request.input("mail", sql.NVarChar, mail);
         const result = await request.query(query);
 
-        console.log("Query result:", result.recordset); // Debug log
 
         if (result.recordset.length === 0) {
             return res.status(401).json({ error: "Invalid credentials." });
@@ -95,8 +94,7 @@ app.post('/api/user/login', async (req, res) => {
         const client = result.recordset[0];
         const storedPassword = client["password"]; // Ensure correct casing for the password field
 
-        console.log("Stored Password:", storedPassword); // Debug log
-        console.log("Provided Password:", password); // Debug log
+       
 
         // Compare passwords (without hashing)
         if (password !== storedPassword) {
@@ -166,7 +164,6 @@ app.get(['/api/apartments/:id', '/api/Apartments/:id'], async (req, res) => {
             const photosResult = await photosRequest.query(photosQuery);
             apartment.Photos = photosResult.recordset.map(photo => photo.photo_url);
 
-            console.log('Apartment found:', apartment);
             res.json(apartment);
         } else {
             console.log('Apartment not found');
@@ -202,11 +199,9 @@ app.get('/api/apartments/:id/availability', async (req, res) => {
             const unavailableDates = availabilityResult.recordset.map(record => record.unavailable_date);
             res.json(unavailableDates);
         } else {
-            console.log('No availability data found');
             res.status(404).json({ message: "No availability data found" });
         }
     } catch (err) {
-        console.error("Error fetching availability data:", err.message);
         res.status(500).send("Server error: " + err.message);
     }
 });

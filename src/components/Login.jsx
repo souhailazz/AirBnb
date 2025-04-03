@@ -14,7 +14,7 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5276/api/User/login', {
+            const response = await axios.post('https://backend-production-886a.up.railway.app/api/User/login', {
                 mail: email,
                 password: password,
                 nom: '',
@@ -59,6 +59,13 @@ function Login() {
             </div>
             {error && <p className="error-message">{error}</p>}
             <button type="submit" className="login-button">Login</button>
+            <button 
+                type="button" 
+                className="signup-button" 
+                onClick={() => navigate('/signup')}
+            >
+                Don't have an account? Sign Up
+            </button>
         </form>
     );
 }

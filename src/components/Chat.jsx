@@ -18,7 +18,7 @@ const Chat = ({  }) => {
             return;
         }
         
-        fetch(`http://localhost:5276/api/message/chats/${sessionId}`)
+        fetch(`https://backend-production-886a.up.railway.app/api/message/chats/${sessionId}`)
             .then(res => {
                 if (!res.ok) {
                     throw new Error(`HTTP error! Status: ${res.status}`);
@@ -40,7 +40,7 @@ const Chat = ({  }) => {
     // Fetch reservation status
     const fetchReservationStatus = async (reservationId) => {
         try {
-            const response = await fetch(`http://localhost:5276/api/Reservation/${reservationId}`);
+            const response = await fetch(`https://backend-production-886a.up.railway.app/api/Reservation/${reservationId}`);
             if (!response.ok) {
                 throw new Error(`Error fetching reservation: ${response.status}`);
             }
@@ -62,7 +62,7 @@ const Chat = ({  }) => {
     // Fetch messages for selected chat
     useEffect(() => {
         if (selectedChat) {
-            fetch(`http://localhost:5276/api/message/${selectedChat.reservationId}`)
+            fetch(`https://backend-production-886a.up.railway.app/api/message/${selectedChat.reservationId}`)
                 .then(res => res.json())
                 .then(data => {
                     setMessages(data);
@@ -89,14 +89,14 @@ const Chat = ({  }) => {
             content: newMessage
         };
 
-        const response = await fetch("http://localhost:5276/api/message", {
+        const response = await fetch("https://backend-production-886a.up.railway.app/api/message", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(messageData)
         });
 
         if (response.ok) {
-            fetch(`http://localhost:5276/api/message/${selectedChat.reservationId}`)
+            fetch(`https://backend-production-886a.up.railway.app/api/message/${selectedChat.reservationId}`)
                 .then(res => res.json())
                 .then(data => setMessages(data))
                 .catch(error => console.error("Error fetching messages:", error));
@@ -112,7 +112,7 @@ const Chat = ({  }) => {
                 etat: status // The API expects an object with 'etat' property
             };
 
-            const response = await fetch(`http://localhost:5276/api/Reservation/${reservationId}/status`, {
+            const response = await fetch(`https://backend-production-886a.up.railway.app/api/Reservation/${reservationId}/status`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(statusDto)
@@ -130,7 +130,7 @@ const Chat = ({  }) => {
                 content: `Reservation #${reservationId} has been ${status}.`
             };
 
-            await fetch("http://localhost:5276/api/message", {
+            await fetch("https://backend-production-886a.up.railway.app/api/message", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(statusMessage)
@@ -146,7 +146,7 @@ const Chat = ({  }) => {
             setReservationDecided(true);
 
             // Refresh messages
-            fetch(`http://localhost:5276/api/message/${selectedChat.reservationId}`)
+            fetch(`https://backend-production-886a.up.railway.app/api/message/${selectedChat.reservationId}`)
                 .then(res => res.json())
                 .then(data => setMessages(data))
                 .catch(error => console.error("Error fetching messages:", error));

@@ -78,7 +78,7 @@ function App() {
       // Navigate first, then fetch data
       navigate('/MyReservations');
       
-      fetch(`http://localhost:5276/api/Reservation/reservations/${userId}`)
+      fetch(`https://backend-production-886a.up.railway.app/api/Reservation/reservations/${userId}`)
       .then(response => {
           console.log("Response status:", response.status);
           if (!response.ok) {
@@ -123,7 +123,7 @@ navigate('/Chat');
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:5276/api/apartments${params}`, {
+      const response = await fetch(`https://backend-production-886a.up.railway.app/api/apartments${params}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -148,44 +148,41 @@ navigate('/Chat');
   return (
     <div className="App">
       <header className="header">
-        <div className="home-button" onClick={handleHomeClick}>
-          <FaHome className="home-icon" />  <span className="profile-text">
-          Home </span>
+        <div className="header-nav">
+          <div className="home-button" onClick={handleHomeClick}>
+            <FaHome className="home-icon" />
+            <span className="profile-text">Home</span>
+          </div>
+          <div className="home-button" onClick={handleChatClick}>
+            <FaComments className="Chat" />
+            <span className="profile-text">Chat</span>
+          </div>
         </div>
 
-
-
-        <div className="home-button" onClick={handleChatClick}>
-          <FaComments className="Chat" /><span className="profile-text">
-          Chat </span>
-        </div>
-
-
-
-
-
-        <div className="profile-icon" onClick={handleUserClick}>
-          <a className="profile-link">
-            <FaUser className="user-icon" />
-            <span className="profile-text">Profile</span>
-          </a>
-        </div>
-        <div className="language-selector">
-          <LanguageSelector />
-        </div>
         <div className="search-bar">
-        <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={handleSearch} />
         </div>
 
-        {sessionStorage.getItem('userId') && (
-          <button className="disconnect-button" onClick={() => {
-            sessionStorage.removeItem('userId');
-            navigate('/login');
-          }}>
-            <FaSignOutAlt className="disconnect-icon" /> Disconnect
-          </button>
-        )}
-
+        <div className="header-right">
+          <div className="language-selector">
+            <LanguageSelector />
+          </div>
+          <div className="profile-icon" onClick={handleUserClick}>
+            <a className="profile-link">
+              <FaUser className="user-icon" />
+              <span className="profile-text">Profile</span>
+            </a>
+          </div>
+          {sessionStorage.getItem('userId') && (
+            <button className="disconnect-button" onClick={() => {
+              sessionStorage.removeItem('userId');
+              navigate('/login');
+            }}>
+              <FaSignOutAlt className="disconnect-icon" />
+              <span>Disconnect</span>
+            </button>
+          )}
+        </div>
       </header>
       {loading && <p>Loading apartments...</p>}
 

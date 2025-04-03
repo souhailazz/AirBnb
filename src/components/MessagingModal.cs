@@ -21,7 +21,7 @@ const MessagingModal = ({ reservationDetails, onClose }) => {
       }
       
       try {
-        const response = await fetch(`http://localhost:5276/api/Reservation/recent/${sessionId}`);
+        const response = await fetch(`https://backend-production-886a.up.railway.app/api/Reservation/recent/${sessionId}`);
         if (response.ok) {
           const data = await response.json();
           setReservationId(data.id);
@@ -42,7 +42,7 @@ const MessagingModal = ({ reservationDetails, onClose }) => {
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch(`http://localhost:5276/api/messages/${reservationId}`);
+      const response = await fetch(`https://backend-production-886a.up.railway.app/api/messages/${reservationId}`);
       if (response.ok) {
         const data = await response.json();
         setMessages(data);
@@ -56,7 +56,7 @@ const MessagingModal = ({ reservationDetails, onClose }) => {
     if (!newMessage.trim() || !reservationId) return;
 
     try {
-      const response = await fetch(`http://localhost:5276/api/Reservation/${reservationId}`);
+      const response = await fetch(`https://backend-production-886a.up.railway.app/api/Reservation/${reservationId}`);
       if (!response.ok) throw new Error("Failed to fetch reservation details");
       
       const reservation = await response.json();
@@ -68,7 +68,7 @@ const MessagingModal = ({ reservationDetails, onClose }) => {
         content: newMessage
       };
       
-      const msgResponse = await fetch("http://localhost:5276/api/messages", {
+      const msgResponse = await fetch("https://backend-production-886a.up.railway.app/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(messageData)

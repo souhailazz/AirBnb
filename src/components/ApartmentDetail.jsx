@@ -9,7 +9,6 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import ReservationModal from './ReservationModal';
 import MessagingModal from './MessagingModal';
-const sessionId = sessionStorage.getItem('userId'); 
 
 const ApartmentDetail = () => {
   const { id } = useParams();
@@ -24,6 +23,8 @@ const ApartmentDetail = () => {
   const [reservationDetails, setReservationDetails] = useState({ adults: 0, children: 0, pets: 0 });
   const [imageLoading, setImageLoading] = useState(true); // New state for image loading
   const [currentReservationId, setCurrentReservationId] = useState(null);
+  const sessionId = sessionStorage.getItem('userId'); // Retrieve session ID dynamically
+
   const fetchRecentReservationId = async () => {
     try {
       if (!sessionId) {
@@ -31,7 +32,7 @@ const ApartmentDetail = () => {
         return null;
       }
       
-      const response = await fetch(`http://localhost:5276/api/Reservation/recent/${sessionId}`);
+      const response = await fetch(`https://backend-production-886a.up.railway.app/api/Reservation/recent/${sessionId}`);
       if (!response.ok) {
         throw new Error(`Error fetching recent reservation: ${response.status}`);
       }
@@ -65,7 +66,7 @@ const ApartmentDetail = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:5276/api/Apartments/${id}`);
+      const response = await fetch(`https://backend-production-886a.up.railway.app/api/Apartments/${id}`);
       if (!response.ok) throw new Error(`Error fetching apartment details`);
       const data = await response.json();
       setApartment(data);
@@ -76,13 +77,13 @@ const ApartmentDetail = () => {
     }
   };
   const handleImageLoad = () => {
-    setImageLoading(false); // Set loading to false when the image is loaded
+    setImageLoading(false);   
   };
 
 
   const fetchApartmentAvailability = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5276/api/Apartments/GetApartmentAvailability/${id}`);
+      const response = await fetch(`https://backend-production-886a.up.railway.app/api/Apartments/GetApartmentAvailability/${id}`);
       if (!response.ok) throw new Error(`Error fetching availability data`);
       const data = await response.json();
       setUnavailableDates(data.length > 0 ? data : []);
@@ -99,7 +100,7 @@ const ApartmentDetail = () => {
         payment_code: "PAYMENT-" + Date.now() // Generate a unique payment code
       };
   
-      const response = await fetch('http://localhost:5276/api/Payments', {
+      const response = await fetch('https://backend-production-886a.up.railway.app/api/Payments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -122,6 +123,8 @@ const ApartmentDetail = () => {
     throw error;
   }
   };
+  const sessionIdclient = sessionStorage.getItem('userId'); // Retrieve session ID dynamically
+
   const createReservation = async (reservationDetails) => {
     try {
       if (!startDate || !endDate) {
@@ -137,32 +140,36 @@ const ApartmentDetail = () => {
       // Create payment first
       const paiement = await createPayment(totalPrice, "Card");
   
-      // Create reservation DTO
-      const reservationDto  = {
-        id_client: sessionId,
-        id_appartement: parseInt(id),
+      // Make sure sessionId is properly parsed as an integer
+      const clientId = parseInt(sessionIdclient, 10);
+      if (isNaN(clientId)) {
+        throw new Error('Invalid client ID');
+      }
+  
+      const reservationDto = {
+        id_client: parseInt(clientId, 10),  
+        id_appartement: parseInt(id, 10),  // Make sure apartment ID is included and is an integer
         date_depart: startDate.toISOString(),
         date_sortie: endDate.toISOString(),
-        etat: "Pending",
-        nbr_adultes: parseInt(reservationDetails.adults),
-        nbr_enfants: parseInt(reservationDetails.children),
+        nbr_adultes: parseInt(reservationDetails.adults, 10),
+        nbr_enfants: parseInt(reservationDetails.children, 10),
         animaux: reservationDetails.pets > 0,
-        id_paiement: paiement.id,
+        id_paiement: paiement.id  
       };
-  console.log("id dyal paiement ",paiement.id);
+  
       console.log("Sending reservation request:", JSON.stringify(reservationDto, null, 2));
   
-      const response = await fetch('http://localhost:5276/api/Reservation', {
+      const response = await fetch('https://backend-production-886a.up.railway.app/api/Reservation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify( reservationDto ) 
+        body: JSON.stringify(reservationDto)
       });
   
-      const data = await response.text(); // First get the response as text
+      const data = await response.text();
       try {
-        const jsonData = JSON.parse(data); // Try to parse it as JSON
+        const jsonData = JSON.parse(data);
         if (!response.ok) {
           throw new Error(jsonData.message || 'Failed to create reservation');
         }
@@ -210,7 +217,7 @@ const ApartmentDetail = () => {
       
       console.log("Sending message data:", messageData);
       
-      const response = await fetch("http://localhost:5276/api/message", {
+      const response = await fetch("https://backend-production-886a.up.railway.app/api/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(messageData)

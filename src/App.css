@@ -84,12 +84,12 @@
   z-index: 1000;
 }
 
-/* Search bar styles */
+/* Search bar container */
 .search-bar {
-  max-width: 800px;
-  margin: 1rem auto;
-  padding: 1rem;
-  border-radius: var(--border-radius);
+  flex: 1;
+  max-width: 850px;
+  margin: 0 20px;
+  height: 48px;
 }
 
 /* Login and Signup page styles */
@@ -127,78 +127,250 @@
 .auth-form button:hover {
   background-color: var(--primary-dark);
 }
+
 /* Header container */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
-  background-color: #f8f9fa; /* Light gray background */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 15px 40px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-/* Profile icon and text */
-.profile-icon {
-  cursor: pointer;
+/* Left side navigation buttons */
+.header-nav {
   display: flex;
   align-items: center;
+  gap: 24px;
+}
+
+/* Home and Chat buttons */
+.home-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 24px;
+  background-color: transparent;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  color: #222222;
+  font-weight: 500;
+}
+
+.home-button:hover {
+  background-color: #f7f7f7;
+}
+
+.home-icon, .Chat {
+  margin-right: 8px;
+  font-size: 1.2em;
+  color: #222222;
+}
+
+/* Right side elements */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Profile icon */
+.profile-icon {
+  display: flex;
+  align-items: center;
+  padding: 5px 5px 5px 12px;
+  border-radius: 21px;
+  border: 1px solid #DDDDDD;
+  background-color: white;
+  transition: box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.profile-icon:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
 }
 
 .profile-link {
   display: flex;
   align-items: center;
   text-decoration: none;
-  color: #333; /* Dark gray text */
-  font-size: 16px;
-  transition: color 0.3s ease;
-}
-
-.profile-link:hover {
-  color: #007bff; /* Blue color on hover */
+  color: #222222;
+  gap: 8px;
 }
 
 .user-icon {
-  margin-right: 8px;
-  font-size: 20px; /* Adjust icon size */
+  font-size: 1.2em;
+  color: #717171;
 }
 
-.profile-text {
-  font-weight: 500; /* Medium font weight */
-}
-
-/* Language selector */
-.language-selector {
-  margin-left: auto; /* Push to the right */
-  margin-right: 20px; /* Add some spacing */
-}
-
-.home-button {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.home-button:hover {
-  color: #007bff; /* Blue color on hover */
-}
-
-.home-icon {
-  margin-right: 5px; /* Space between icon and text */
-  font-size: 1.2em; /* Icon size */
-}
-
+/* Disconnect button */
 .disconnect-button {
   display: flex;
   align-items: center;
-  background-color: #f44336; /* Example background color */
-  color: white; /* Text color */
+  padding: 8px 16px;
+  background-color: #FF385C;
+  color: white;
   border: none;
-  padding: 10px 15px;
+  border-radius: 24px;
   cursor: pointer;
-  border-radius: 5px; /* Rounded corners */
+  transition: transform 0.2s, background-color 0.2s;
+  font-weight: 500;
+}
+
+.disconnect-button:hover {
+  background-color: #E31C5F;
+  transform: scale(1.02);
 }
 
 .disconnect-icon {
-  margin-right: 5px; /* Space between icon and text */
+  margin-right: 8px;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .header {
+    padding: 12px 16px;
+  }
+
+  .search-bar {
+    order: 3;
+    width: 100%;
+    max-width: none;
+    margin: 8px 0;
+  }
+
+  .header-right {
+    gap: 8px;
+  }
+
+  .profile-text {
+    display: none;
+  }
+
+  .disconnect-button span {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .header {
+    padding: 8px 12px;
+  }
+
+  .home-button {
+    padding: 6px 12px;
+  }
+
+  .profile-icon {
+    padding: 4px 4px 4px 8px;
+  }
+
+  .search-bar {
+    margin: 6px 0;
+    height: auto;
+  }
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    padding: 10px;
+    position: relative;
+  }
+
+  .home-button {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .home-icon {
+    font-size: 1em;
+  }
+
+  .profile-icon {
+    padding: 8px;
+  }
+
+  .profile-text {
+    font-size: 14px;
+  }
+
+  .user-icon {
+    font-size: 16px;
+  }
+
+  .language-selector {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    margin: 0;
+  }
+
+  .search-bar {
+    width: 100%;
+    margin: 10px 0;
+    padding: 0 10px;
+  }
+
+  .disconnect-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    margin-left: auto;
+  }
+
+  /* Adjust spacing between elements */
+  .header > * {
+    margin: 0 5px;
+  }
+
+  /* Make icons slightly smaller on mobile */
+  .Chat {
+    font-size: 16px;
+  }
+
+  /* Ensure text doesn't overflow */
+  .profile-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+  }
+}
+
+/* Additional styles for very small screens */
+@media screen and (max-width: 480px) {
+  .header {
+    padding: 8px;
+  }
+
+  .home-button, .profile-icon {
+    padding: 6px;
+  }
+
+  .profile-text {
+    display: none; /* Hide text on very small screens */
+  }
+
+  .home-icon, .user-icon, .Chat {
+    font-size: 18px;
+  }
+
+  .disconnect-button {
+    padding: 6px 10px;
+  }
+
+  .disconnect-button span {
+    display: none; /* Hide "Disconnect" text on very small screens */
+  }
+
+  .disconnect-icon {
+    margin-right: 0;
+  }
 }
 

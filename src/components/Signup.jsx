@@ -15,7 +15,7 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5276/api/User/signup', formData);
+            const response = await axios.post('https://backend-production-886a.up.railway.app/api/User/signup', formData);
             if (response.status === 200) {
                 alert('User registered successfully!');
                 // Optionally, redirect to login page or clear the form
@@ -77,7 +77,7 @@ const Signup = () => {
                     className="form-input"
                 />
             </div>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="error-message">{error}</p>}
             <button type="submit" className="signup-button">Sign Up</button>
         </form>
     );

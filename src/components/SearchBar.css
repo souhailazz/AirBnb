@@ -1,98 +1,247 @@
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
+/* 
+ * Note: External CSS imports can cause performance issues, but keeping it for icon compatibility.
+ * For production, consider self-hosting these files.
+ */
+ @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
 
-.SearchBar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 15px;
-    background: white;
-    border-radius: 50px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    max-width: 900px;
-    margin: auto;
-    position: relative;
-}
-
-/* Input Container for Icon */
-.SearchBar .InputContainer {
-    position: relative;
-    flex: 1;
-    display: flex;
-    align-items: center;
-}
-
-.SearchBar input {
-    padding: 12px 40px; /* Space for icon */
-    border: none;
-    border-radius: 50px;
-    font-size: 16px;
-    background: #f7f7f7;
-    flex: 1;
-    text-align: center;
-    width: 100%;
-}
-
-.SearchBar input:focus {
-    outline: 2px solid #ff385c;
-    background: white;
-}
-
-/* Search Icon */
-.SearchBar .InputContainer i {
-    position: absolute;
-    left: 15px;
-    font-size: 18px;
-    color: #888;
-}
-
-/* Search Button */
-.SearchBar button {
-    background: #ff385c;
-    color: white;
-    font-weight: bold;
-    border: none;
-    padding: 12px 20px;
-    font-size: 16px;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Search Button Hover Effect */
-.SearchBar button:hover {
-    background: #e03150;
-}
-
-/* Button Icon */
-.SearchBar button i {
-    font-size: 18px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .SearchBar {
-        flex-direction: column;
-        border-radius: 15px;
-        padding: 10px;
-    }
-
-    .SearchBar .InputContainer {
-        width: 100%;
-    }
-
-    .SearchBar input {
-        width: 100%;
-        border-radius: 8px;
-        padding-left: 40px;
-    }
-
-    .SearchBar button {
-        width: 100%;
-        border-radius: 8px;
-        justify-content: center;
-    }
-}
+ .SearchBar {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+   padding: 8px 16px;
+   background: white;
+   border-radius: 40px;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+   width: 100%;
+   border: 1px solid #eaeaea;
+   transition: all 0.2s ease;
+ }
+ 
+ .SearchBar:hover {
+   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+   transform: translateY(-1px);
+ }
+ 
+ .SearchBar:focus-within {
+   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+   border-color: #ddd;
+ }
+ 
+ /* Input Container for Icon */
+ .SearchBar .InputContainer {
+   position: relative;
+   display: flex;
+   align-items: center;
+   flex: 1;
+   min-width: 120px;
+   border-right: 1px solid #eaeaea;
+   padding-right: 12px;
+ }
+ 
+ .SearchBar .InputContainer:last-of-type {
+   border-right: none;
+ }
+ 
+ .SearchBar input {
+   padding: 10px 10px 10px 36px;
+   border: none;
+   font-size: 14px;
+   background: transparent;
+   width: 100%;
+   color: #333;
+   transition: background-color 0.2s;
+ }
+ 
+ .SearchBar input:focus {
+   outline: none;
+   background-color: rgba(255, 56, 92, 0.03);
+   border-radius: 20px;
+ }
+ 
+ .SearchBar input::placeholder {
+   color: #717171;
+   transition: color 0.2s;
+ }
+ 
+ .SearchBar input:focus::placeholder {
+   color: #999;
+ }
+ 
+ /* Search Icon */
+ .SearchBar .InputContainer i {
+   position: absolute;
+   left: 10px;
+   font-size: 16px;
+   color: #FF385C;
+ }
+ 
+ /* Checkbox Container */
+ .CheckboxContainer {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   font-size: 14px;
+   color: #333;
+   padding: 0 12px;
+   white-space: nowrap;
+ }
+ 
+ .CheckboxContainer input[type="checkbox"] {
+   width: 18px;
+   height: 18px;
+   margin: 0;
+   cursor: pointer;
+   accent-color: #FF385C;
+   border-radius: 4px;
+ }
+ 
+ .CheckboxContainer label {
+   cursor: pointer;
+   user-select: none;
+ }
+ 
+ /* Search Button */
+ .SearchBar button {
+   background: #FF385C;
+   color: white;
+   font-weight: 500;
+   border: none;
+   padding: 12px 24px;
+   font-size: 14px;
+   border-radius: 24px;
+   cursor: pointer;
+   transition: all 0.2s;
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   white-space: nowrap;
+   box-shadow: 0 2px 8px rgba(255, 56, 92, 0.3);
+ }
+ 
+ .SearchBar button:hover {
+   background: #E31C5F;
+   transform: scale(1.03);
+   box-shadow: 0 4px 12px rgba(255, 56, 92, 0.4);
+ }
+ 
+ .SearchBar button:active {
+   transform: scale(0.98);
+ }
+ 
+ .SearchBar button i {
+   font-size: 14px;
+ }
+ 
+ /* Filters Panel (if needed) */
+ .FiltersPanel {
+   margin-top: 12px;
+   background: white;
+   border-radius: 16px;
+   padding: 16px;
+   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+   animation: slideDown 0.3s ease;
+ }
+ 
+ @keyframes slideDown {
+   from {
+     opacity: 0;
+     transform: translateY(-10px);
+   }
+   to {
+     opacity: 1;
+     transform: translateY(0);
+   }
+ }
+ 
+ /* Responsive Styles */
+ @media (max-width: 768px) {
+   .SearchBar {
+     padding: 6px 10px;
+     gap: 6px;
+   }
+   
+   .SearchBar .InputContainer {
+     min-width: 90px;
+     padding-right: 6px;
+   }
+   
+   .SearchBar input {
+     padding: 8px 8px 8px 30px;
+     font-size: 13px;
+   }
+   
+   .SearchBar .InputContainer i {
+     left: 8px;
+     font-size: 14px;
+   }
+   
+   .CheckboxContainer {
+     padding: 0 6px;
+     font-size: 13px;
+   }
+   
+   .SearchBar button {
+     padding: 10px 16px;
+     font-size: 13px;
+   }
+   
+   .SearchBar button i {
+     font-size: 13px;
+   }
+ }
+ 
+ @media (max-width: 640px) {
+   .SearchBar {
+     flex-wrap: wrap;
+     gap: 8px;
+     padding: 8px;
+     border-radius: 16px;
+   }
+   
+   .SearchBar .InputContainer {
+     min-width: calc(50% - 8px);
+     flex: 0 0 calc(50% - 8px);
+     border-right: none;
+     border-bottom: 1px solid #eaeaea;
+     padding-bottom: 6px;
+     margin-bottom: 6px;
+   }
+   
+   .SearchBar .InputContainer:nth-child(3),
+   .SearchBar .InputContainer:nth-child(4) {
+     margin-bottom: 0;
+     border-bottom: none;
+   }
+   
+   .CheckboxContainer {
+     order: 5;
+     width: 100%;
+     justify-content: center;
+     padding: 8px 0;
+     border-top: 1px solid #eaeaea;
+     margin-top: 4px;
+   }
+   
+   .SearchBar button {
+     order: 6;
+     width: 100%;
+     justify-content: center;
+   }
+ }
+ 
+ @media (max-width: 480px) {
+   .SearchBar .InputContainer {
+     min-width: 100%;
+     flex: 0 0 100%;
+   }
+   
+   .SearchBar .InputContainer:nth-child(3) {
+     border-bottom: 1px solid #eaeaea;
+     margin-bottom: 6px;
+   }
+   
+   .CheckboxContainer input[type="checkbox"] {
+     width: 16px;
+     height: 16px;
+   }
+ }

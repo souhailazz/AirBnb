@@ -56,7 +56,7 @@ const Admin = () => {
   const fetchApartments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5276/api/Apartments");
+      const response = await axios.get("https://backend-production-886a.up.railway.app/api/Apartments");
       setApartments(response.data);
       setLoading(false);
     } catch (err) {
@@ -164,7 +164,7 @@ const Admin = () => {
         photos: formData.photos.filter((photo) => photo.photo_url.trim() !== ""),
       };
 
-      const response = await axios.post("http://localhost:5276/api/Apartments", submitData);
+      const response = await axios.post("https://backend-production-886a.up.railway.app/api/Apartments", submitData);
 
       console.log("Apartment created:", response.data);
       setSuccessMessage("Apartment created successfully!");
@@ -258,10 +258,10 @@ const Admin = () => {
       let response;
       if (formData.id) {
         // Update existing apartment
-        response = await axios.put(`http://localhost:5276/api/Apartments/${formData.id}`, submitData);
+        response = await axios.put(`https://backend-production-886a.up.railway.app/api/Apartments/${formData.id}`, submitData);
       } else {
         // Create new apartment
-        response = await axios.post("http://localhost:5276/api/Apartments", submitData);
+        response = await axios.post("https://backend-production-886a.up.railway.app/api/Apartments", submitData);
       }
   
       console.log("Success:", response.data);
@@ -287,7 +287,7 @@ const Admin = () => {
     if (window.confirm("Are you sure you want to delete this apartment?")) {
       try {
         setLoading(true);
-        await axios.delete(`http://localhost:5276/api/Apartments/${id}`);
+        await axios.delete(`https://backend-production-886a.up.railway.app/api/Apartments/${id}`);
 
         // Refresh apartment list
         fetchApartments();
@@ -973,9 +973,7 @@ const Admin = () => {
                         </svg>
                         Delete
                       </button>
-                      <button onClick={() => handleEdit(apartment)} className="btn btn-warning btn-icon">
-    ✏️ Edit
-  </button>
+                    
                     </td>
                   </tr>
                 ))}

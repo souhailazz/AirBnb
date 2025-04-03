@@ -19,8 +19,23 @@ builder.Services.AddCors(options =>
         });
 });
 // Configure DbContext with SQL Server
+string connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") ?? 
+    "Server=AppartementReservationDB.mssql.somee.com;" +
+    "Database=AppartementReservationDB;" +
+    "User Id=souhailazzimani_SQLLogin_1;" +
+    "Password=x7heeqrtjf;"      +
+    "TrustServerCertificate=True;" +
+    "Encrypt=True;" +
+    "MultipleActiveResultSets=True";
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null);
+        sqlOptions.CommandTimeout(5); 
+    }));
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {

@@ -29,7 +29,6 @@ namespace AppartementReservationAPI.Controllers
             [FromQuery] bool? pets = null)
         {
             // Log the request
-            Console.WriteLine("Received request for apartments");
 
             try
             {
@@ -62,7 +61,6 @@ namespace AppartementReservationAPI.Controllers
                 }
 
                 // Log the final query
-                Console.WriteLine($"Final query: {query.ToQueryString()}");
 
                 // Execute the query
                 var results = await query.ToListAsync();
@@ -73,14 +71,12 @@ namespace AppartementReservationAPI.Controllers
                 }
 
                 // Log the results to verify the Photos property
-                Console.WriteLine($"Results: {JsonSerializer.Serialize(results)}");
 
                 return Ok(results);
             }
             catch (Exception ex)
             {
                 // Log the exception details
-                Console.WriteLine($"Error fetching apartments: {ex.Message}");
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
@@ -169,7 +165,6 @@ public async Task<ActionResult<IEnumerable<string>>> GetApartmentAvailability(in
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Error fetching availability for apartment {id}: {ex.Message}");
         return StatusCode(500, "Internal server error: " + ex.Message);
     }
 }
