@@ -369,7 +369,7 @@ const ApartmentDetail = () => {
                 return;
               }
               setReservationModalOpen(true);
-            }}
+            }}  
           >
             Reserve
           </button>
