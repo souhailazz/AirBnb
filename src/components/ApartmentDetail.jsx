@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './ApartmentDetail.css';
 import BookingCalendar from './BookingCalendar';
 import Map from './Map';
@@ -12,6 +12,7 @@ import MessagingModal from './MessagingModal';
 
 const ApartmentDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [apartment, setApartment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -148,7 +149,7 @@ const ApartmentDetail = () => {
   
       const reservationDto = {
         id_client: parseInt(clientId, 10),  
-        id_appartement: parseInt(id, 10),  // Make sure apartment ID is included and is an integer
+        id_appartement: parseInt(id, 10), 
         date_depart: startDate.toISOString(),
         date_sortie: endDate.toISOString(),
         nbr_adultes: parseInt(reservationDetails.adults, 10),
@@ -238,6 +239,12 @@ const ApartmentDetail = () => {
   };
   const handleReservationConfirm = async (details) => {
     try {
+      if (!sessionId) {
+        alert("Please login to make a reservation");
+        navigate('/login');
+        return;
+      }
+
       setReservationDetails(details);
       if (!startDate || !endDate) {
         alert("Please select check-in and check-out dates.");
@@ -353,7 +360,19 @@ const ApartmentDetail = () => {
 </div> 
           
           
-                 <button className="reserve-button" onClick={() => setReservationModalOpen(true)}>Reserve</button>
+                 <button 
+            className="reserve-button" 
+            onClick={() => {
+              if (!sessionId) {
+                alert("Please login to make a reservation");
+                navigate('/login');
+                return;
+              }
+              setReservationModalOpen(true);
+            }}
+          >
+            Reserve
+          </button>
         </>
       ) : (
         <div>No apartment details available</div>

@@ -10,7 +10,7 @@ import MyReservations from './components/MyReservations';
 import Admin from './components/Admin';
 import './i18n';
 import ApartmentDetail from './components/ApartmentDetail'; // New component for apartment details
-import { FaComments,FaUser, FaHome, FaSignOutAlt } from 'react-icons/fa'; // Import FaUser, FaHome, and FaSignOutAlt for icons
+import { FaComments,FaUser, FaHome, FaSignOutAlt, FaUserCog, FaEdit } from 'react-icons/fa'; // Import FaUser, FaHome, and FaSignOutAlt for icons
 import './App.css';
 import Edit from './components/Edit';
 import Chat from './components/Chat';
@@ -118,6 +118,14 @@ function App() {
 navigate('/Chat');
   };
 
+  const handleAdminClick = () => {
+    navigate('/Admin');
+  };
+
+  const handleEditClick = () => {
+    navigate('/Edit');
+  };
+
   const fetchAllApartments = async (params = '') => {
     setLoading(true);
     setError(null);
@@ -167,6 +175,18 @@ navigate('/Chat');
           <div className="language-selector">
             <LanguageSelector />
           </div>
+          {sessionStorage.getItem('userId') === '1' && (
+            <>
+              <div className="admin-button" onClick={handleAdminClick}>
+                <FaUserCog className="admin-icon" />
+                <span className="profile-text">Admin</span>
+              </div>
+              <div className="edit-button" onClick={handleEditClick}>
+                <FaEdit className="edit-icon" />
+                <span className="profile-text">Edit</span>
+              </div>
+            </>
+          )}
           <div className="profile-icon" onClick={handleUserClick}>
             <a className="profile-link">
               <FaUser className="user-icon" />

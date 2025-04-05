@@ -374,3 +374,22 @@
   }
 }
 
+.admin-button, .edit-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.admin-button:hover, .edit-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.admin-icon, .edit-icon {
+  margin-right: 8px;
+  font-size: 1.2em;
+}
+
