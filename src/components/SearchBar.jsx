@@ -6,8 +6,26 @@ const SearchBar = ({ onSearch }) => {
     const [location, setLocation] = useState("");
     const [adults, setAdults] = useState("");
     const [children, setChildren] = useState("");
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
     const searchBarRef = useRef(null);
+
+    useEffect(() => {
+        const checkMobileView = () => {
+            if (window.innerWidth <= 768) {
+                setIsCollapsed(true);
+            } else {
+                setIsCollapsed(false);
+            }
+        };
+
+        checkMobileView();
+
+        window.addEventListener('resize', checkMobileView);
+
+        return () => {
+            window.removeEventListener('resize', checkMobileView);
+        };
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event) => {

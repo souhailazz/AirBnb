@@ -73,9 +73,6 @@
     margin: 0;
     transform-origin: left;
     transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-
-  .SearchBar.collapsed {
     transform: scaleX(0);
     opacity: 0;
     pointer-events: none;
@@ -84,6 +81,7 @@
   .SearchBar:not(.collapsed) {
     transform: scaleX(1);
     opacity: 1;
+    pointer-events: auto;
   }
 }
 
