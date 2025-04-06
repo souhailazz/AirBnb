@@ -1,432 +1,406 @@
-/* 
- * Note: External CSS imports can cause performance issues, but keeping it for icon compatibility.
- * For production, consider self-hosting these files.
- */
- @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
+/* Import Font Awesome for icons */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
 
- /* CSS Variables for easier theming */
- :root {
-   --primary-color: #FF385C;
-   --primary-hover: #E31C5F;
-   --primary-shadow: rgba(255, 56, 92, 0.3);
-   --primary-shadow-hover: rgba(255, 56, 92, 0.4);
-   --text-color: #333;
-   --placeholder-color: #717171;
-   --placeholder-focus-color: #999;
-   --border-color: #eaeaea;
-   --background-color: white;
-   --input-focus-bg: rgba(255, 56, 92, 0.03);
-   --shadow-color: rgba(0, 0, 0, 0.08);
-   --shadow-hover: rgba(0, 0, 0, 0.12);
-   --shadow-focus: rgba(0, 0, 0, 0.15);
- }
- 
- /* Light theme alternative for dark mode */
- @media (prefers-color-scheme: dark) {
-   :root {
-     --primary-color: #FF385C;
-     --primary-hover: #FF5C7C;
-     --text-color: #555;
-     --placeholder-color: #888;
-     --placeholder-focus-color: #666;
-     --border-color: #e0e0e0;
-     --background-color: #f8f8f8;
-     --input-focus-bg: rgba(255, 56, 92, 0.05);
-     --shadow-color: rgba(0, 0, 0, 0.06);
-     --shadow-hover: rgba(0, 0, 0, 0.09);
-     --shadow-focus: rgba(0, 0, 0, 0.12);
-   }
- }
- 
- /* Base styles - Compact horizontal layout */
- .SearchBar {
-   display: flex;
-   align-items: center;
-   gap: 8px; /* Reduced gap */
-   padding: 6px 12px; /* Reduced padding */
-   background: var(--background-color);
-   border-radius: 40px;
-   box-shadow: 0 4px 12px var(--shadow-color);
-   width: 100%;
-   border: 1px solid var(--border-color);
-   transition: all 0.2s ease;
-   flex-wrap: nowrap; /* Ensure horizontal layout */
-   max-width: 100%;
- }
- 
- .SearchBar:hover {
-   box-shadow: 0 6px 16px var(--shadow-hover);
-   transform: translateY(-1px);
- }
- 
- .SearchBar:focus-within {
-   box-shadow: 0 6px 20px var(--shadow-focus);
-   border-color: var(--border-color);
- }
- 
- /* Input Container for Icon - Smaller for compact layout */
- .SearchBar .InputContainer {
-   position: relative;
-   display: flex;
-   align-items: center;
-   flex: 0 0 auto; /* Don't grow or shrink */
-   min-width: 80px; /* Reduced minimum width */
-   max-width: 120px; /* Added maximum width */
-   border-right: 1px solid var(--border-color);
-   padding-right: 6px; /* Reduced padding */
- }
- 
- .SearchBar .InputContainer:last-of-type {
-   border-right: none;
- }
- 
- .SearchBar input {
-   padding: 6px 4px 6px 24px; /* Reduced padding */
-   border: none;
-   font-size: 12px; /* Smaller font */
-   background: transparent;
-   width: 100%;
-   color: var(--text-color);
-   transition: background-color 0.2s;
-   -webkit-appearance: none;
-   border-radius: 0;
- }
- 
- .SearchBar input:focus {
-   outline: none;
-   background-color: var(--input-focus-bg);
-   border-radius: 16px; /* Smaller radius */
- }
- 
- .SearchBar input::placeholder {
-   color: var(--placeholder-color);
-   transition: color 0.2s;
- }
- 
- .SearchBar input:focus::placeholder {
-   color: var(--placeholder-focus-color);
- }
- 
- /* Search Icon - Smaller and repositioned */
- .SearchBar .InputContainer i {
-   position: absolute;
-   left: 6px; /* Moved closer to edge */
-   font-size: 12px; /* Smaller icon */
-   color: var(--primary-color);
- }
- 
- /* Checkbox Container - Compact version */
- .CheckboxContainer {
-   display: flex;
-   align-items: center;
-   gap: 4px; /* Reduced gap */
-   font-size: 12px; /* Smaller font */
-   color: var(--text-color);
-   padding: 0 6px; /* Reduced padding */
-   white-space: nowrap;
-   flex: 0 0 auto;
- }
- 
- .CheckboxContainer input[type="checkbox"] {
-   width: 14px; /* Smaller checkbox */
-   height: 14px;
-   margin: 0;
-   cursor: pointer;
-   accent-color: var(--primary-color);
-   border-radius: 3px;
-   -webkit-appearance: none;
-   appearance: none;
-   background-color: var(--background-color);
-   border: 1px solid var(--border-color);
-   position: relative;
- }
- 
- .CheckboxContainer input[type="checkbox"]:checked {
-   background-color: var(--primary-color);
-   border-color: var(--primary-color);
- }
- 
- .CheckboxContainer input[type="checkbox"]:checked::after {
-   content: '\2713';
-   position: absolute;
-   color: white;
-   font-size: 10px; /* Smaller checkmark */
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
- }
- 
- .CheckboxContainer label {
-   cursor: pointer;
-   user-select: none;
- }
- 
- /* Search Button - Compact version */
- .SearchBar button {
-   background: var(--primary-color);
-   color: white;
-   font-weight: 500;
-   border: none;
-   padding: 6px 12px; /* Reduced padding */
-   font-size: 12px; /* Smaller font */
-   border-radius: 20px; /* Smaller radius */
-   cursor: pointer;
-   transition: all 0.2s;
-   display: flex;
-   align-items: center;
-   gap: 4px; /* Reduced gap */
-   white-space: nowrap;
-   box-shadow: 0 2px 6px var(--primary-shadow);
-   -webkit-tap-highlight-color: transparent;
-   touch-action: manipulation;
-   flex: 0 0 auto;
- }
- 
- .SearchBar button:hover {
-   background: var(--primary-hover);
-   transform: scale(1.03);
-   box-shadow: 0 4px 10px var(--primary-shadow-hover);
- }
- 
- .SearchBar button:active {
-   transform: scale(0.98);
- }
- 
- .SearchBar button i {
-   font-size: 12px; /* Smaller icon */
- }
- 
- /* Filters Panel (if needed) */
- .FiltersPanel {
-   margin-top: 10px;
-   background: var(--background-color);
-   border-radius: 16px;
-   padding: 12px;
-   box-shadow: 0 4px 16px var(--shadow-color);
-   animation: slideDown 0.3s ease;
-   width: 100%;
- }
- 
- @keyframes slideDown {
-   from {
-     opacity: 0;
-     transform: translateY(-10px);
-   }
-   to {
-     opacity: 1;
-     transform: translateY(0);
-   }
- }
- 
- /* Responsive Styles - Optimized to fit on one screen */
- /* Large tablets and smaller */
- @media (max-width: 992px) {
-   .SearchBar {
-     border-radius: 30px;
-     padding: 5px 10px;
-     gap: 6px;
-   }
-   
-   .SearchBar .InputContainer {
-     min-width: 70px;
-   }
-   
-   .SearchBar button {
-     padding: 6px 10px;
-   }
- }
- 
- /* Medium tablets and smaller */
- @media (max-width: 768px) {
-   .SearchBar {
-     padding: 4px 8px;
-     gap: 4px;
-     border-radius: 20px;
-   }
-   
-   .SearchBar .InputContainer {
-     min-width: 60px;
-     padding-right: 4px;
-   }
-   
-   .SearchBar input {
-     padding: 6px 2px 6px 20px;
-     font-size: 11px;
-   }
-   
-   .SearchBar .InputContainer i {
-     left: 5px;
-     font-size: 11px;
-   }
-   
-   .CheckboxContainer {
-     padding: 0 4px;
-     font-size: 11px;
-   }
-   
-   .SearchBar button {
-     padding: 6px 10px;
-     font-size: 11px;
-   }
-   
-   .SearchBar button i {
-     font-size: 11px;
-   }
- }
- 
- /* Small tablets and large phones */
- @media (max-width: 640px) {
-   .SearchBar {
-     gap: 2px;
-     padding: 4px 4px;
-     border-radius: 16px;
-   }
-   
-   .SearchBar .InputContainer {
-     min-width: 40px;
-     max-width: 80px;
-     padding-right: 2px;
-   }
-   
-   .SearchBar input {
-     padding: 4px 1px 4px 16px;
-     font-size: 10px;
-   }
-   
-   .CheckboxContainer {
-     padding: 0 2px;
-     font-size: 10px;
-   }
-   
-   .CheckboxContainer input[type="checkbox"] {
-     width: 10px;
-     height: 10px;
-   }
-   
-   .SearchBar button {
-     padding: 4px 6px;
-     font-size: 10px;
-   }
- }
- 
- /* Mobile phones */
- @media (max-width: 480px) {
-   .SearchBar {
-     padding: 2px 4px;
-     gap: 1px;
-   }
-   
-   .SearchBar .InputContainer {
-     min-width: 30px;
-     max-width: 60px;
-   }
-   
-   .SearchBar input {
-     padding: 3px 1px 3px 14px;
-     font-size: 9px;
-   }
-   
-   .SearchBar .InputContainer i {
-     left: 3px;
-     font-size: 9px;
-   }
-   
-   .CheckboxContainer {
-     padding: 0 2px;
-     font-size: 9px;
-   }
-   
-   .SearchBar button {
-     padding: 3px 6px;
-     font-size: 9px;
-     border-radius: 10px;
-   }
-   
-   .SearchBar button i {
-     font-size: 9px;
-   }
- }
- 
- /* Very small devices */
- @media (max-width: 360px) {
-   .SearchBar {
-     padding: 2px 2px;
-     gap: 1px;
-   }
-   
-   .SearchBar .InputContainer {
-     min-width: 25px;
-     max-width: 50px;
-   }
-   
-   .SearchBar input {
-     padding: 3px 1px 3px 12px;
-     font-size: 8px;
-   }
-   
-   .SearchBar .InputContainer i {
-     left: 2px;
-     font-size: 8px;
-   }
-   
-   .CheckboxContainer {
-     display: none; /* Hide checkbox on very small screens */
-   }
-   
-   .SearchBar button {
-     padding: 3px 4px;
-     font-size: 8px;
-   }
- }
- 
- /* Touch device optimizations */
- @media (hover: none) {
-   .SearchBar:hover {
-     transform: none;
-     box-shadow: 0 4px 12px var(--shadow-color);
-   }
-   
-   .SearchBar button:hover {
-     transform: none;
-     background: var(--primary-color);
-     box-shadow: 0 2px 8px var(--primary-shadow);
-   }
-   
-   /* Increase touch targets for mobile */
-   .SearchBar input,
-   .SearchBar button,
-   .CheckboxContainer input[type="checkbox"],
-   .CheckboxContainer label {
-     touch-action: manipulation;
-   }
- }
- 
- /* Reduce motion for accessibility */
- @media (prefers-reduced-motion: reduce) {
-   .SearchBar,
-   .SearchBar:hover,
-   .SearchBar button,
-   .SearchBar button:hover,
-   .SearchBar button:active,
-   .FiltersPanel {
-     transition: none;
-     animation: none;
-     transform: none;
-   }
- }
- 
- /* Fix for iOS input zoom while maintaining small font size */
- @media screen and (-webkit-min-device-pixel-ratio: 0) { 
-   .SearchBar input {
-     font-size: 12px;
-   }
-   
-   /* Prevent zoom on focus for iOS */
-   @supports (-webkit-touch-callout: none) {
-     .SearchBar input {
-       font-size: 16px; /* iOS requires 16px to prevent zoom */
-       transform: scale(0.75); /* Scale down visually */
-       transform-origin: left center;
-     }
-   }
- }
+/* Root variables */
+:root {
+  --primary-color: #ff385c;
+  --primary-hover: #e31c5f;
+  --primary-shadow: rgba(255, 56, 92, 0.3);
+  --primary-shadow-hover: rgba(255, 56, 92, 0.4);
+  --text-color: #333;
+  --placeholder-color: #717171;
+  --placeholder-focus-color: #999;
+  --border-color: #eaeaea;
+  --background-color: white;
+  --input-focus-bg: rgba(255, 56, 92, 0.03);
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --shadow-hover: rgba(0, 0, 0, 0.12);
+  --shadow-focus: rgba(0, 0, 0, 0.15);
+}
+
+/* Search container */
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Search toggle button - hidden by default */
+.search-toggle {
+  display: none;
+}
+
+/* SearchBar.css - Header optimized */
+.SearchBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--background-color);
+  padding: 8px 12px;
+  border-radius: 40px;
+  max-width: 100%;
+  margin: 0;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.SearchBar:hover {
+  box-shadow: 0 2px 15px var(--shadow-hover);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .search-toggle {
+    display: block;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 20px;
+    color: var(--primary-color);
+    position: absolute;
+    left: 0;
+    z-index: 10;
+  }
+
+  .SearchBar {
+    position: absolute;
+    top: 0;
+    left: 40px;
+    right: 0;
+    margin: 0;
+    transform-origin: left;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .SearchBar.collapsed {
+    transform: scaleX(0);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .SearchBar:not(.collapsed) {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+.InputContainer {
+  position: relative;
+  flex: 1 1 120px;
+  min-width: 100px;
+}
+
+.InputContainer i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary-color);
+  font-size: 14px;
+}
+
+.InputContainer input {
+  width: 100%;
+  padding: 10px 10px 10px 32px;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--text-color);
+  transition: all 0.2s ease;
+}
+
+.InputContainer input:focus {
+  outline: none;
+  background-color: var(--input-focus-bg);
+}
+
+.InputContainer input::placeholder {
+  color: var(--placeholder-color);
+}
+
+.InputContainer input:focus::placeholder {
+  color: var(--placeholder-focus-color);
+}
+
+.CheckboxContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  flex: 0 1 auto;
+  font-size: 13px;
+  color: var(--text-color);
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
+.CheckboxContainer input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.CheckboxContainer i {
+  color: var(--primary-color);
+  font-size: 14px;
+  margin-right: 2px;
+}
+
+.SearchBar button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  box-shadow: 0 2px 8px var(--primary-shadow);
+}
+
+.SearchBar button:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 4px 12px var(--primary-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.SearchBar button i {
+  font-size: 14px;
+}
+
+/* Dividers between inputs */
+.InputContainer:not(:last-of-type)::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background-color: var(--border-color);
+}
+
+/* Header-specific styles */
+header .SearchBar {
+  margin: 0 16px;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 992px) {
+  .SearchBar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 8px 12px;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .SearchBar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+
+  .InputContainer {
+    flex: 0 0 auto;
+    min-width: 120px;
+  }
+
+  .InputContainer:not(:last-of-type)::after {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  header .SearchBar {
+    margin: 8px 0;
+    width: 100%;
+    border-radius: 24px;
+  }
+
+  .CheckboxContainer {
+    padding-right: 8px;
+  }
+}
+
+/* For mobile view - collapsible search */
+@media (max-width: 576px) {
+  header .SearchBar {
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--background-color);
+    padding: 16px;
+    z-index: 100;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 20px var(--shadow-focus);
+    transform-origin: top;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    border-top: none;
+    border-radius: 0;
+  }
+
+  header .SearchBar.collapsed {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  .InputContainer,
+  .CheckboxContainer,
+  .SearchBar button {
+    margin: 6px 0;
+    width: 100%;
+  }
+
+  .InputContainer:not(:last-of-type)::after {
+    display: none;
+  }
+
+  .SearchBar button {
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  /* Search toggle button for mobile */
+  .search-toggle {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  .search-toggle:hover {
+    color: var(--primary-hover);
+  }
+}
+
+/* Header styles to match the search bar */
+.header {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.logo a {
+  color: var(--primary-color);
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.main-nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav li {
+  margin: 0 15px;
+}
+
+.main-nav a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+
+.main-nav a:hover {
+  color: var(--primary-color);
+}
+
+.search-wrapper {
+  flex: 1;
+  max-width: 700px;
+  margin: 0 20px;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+}
+
+.login-btn {
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 15px;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  box-shadow: 0 2px 8px var(--shadow-hover);
+  border-color: var(--placeholder-color);
+}
+
+.login-btn i {
+  font-size: 18px;
+  color: var(--primary-color);
+}
+
+@media (max-width: 992px) {
+  .main-nav {
+    display: none;
+  }
+
+  .search-wrapper {
+    flex: 1;
+    margin: 0 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    height: 70px;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-toggle {
+    display: block;
+  }
+
+  .search-wrapper {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    max-width: none;
+  }
+
+  .search-wrapper.collapsed {
+    display: none;
+  }
+}
+
