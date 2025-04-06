@@ -172,9 +172,7 @@ navigate('/Chat');
         </div>
 
         <div className="header-right">
-          <div className="language-selector">
-            <LanguageSelector />
-          </div>
+         
           {sessionStorage.getItem('userId') === '1' && (
             <>
               <div className="admin-button" onClick={handleAdminClick}>
