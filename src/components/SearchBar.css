@@ -277,49 +277,24 @@
  /* Small tablets and large phones */
  @media (max-width: 640px) {
    .SearchBar {
-     gap: 3px;
-     padding: 4px 6px;
-     border-radius: 16px;
-   }
-   
-   .SearchBar .InputContainer {
-     min-width: 50px;
-   }
-   
-   .CheckboxContainer input[type="checkbox"] {
-     width: 12px;
-     height: 12px;
-   }
-   
-   .SearchBar button {
-     padding: 5px 8px;
-   }
- }
- 
- /* Mobile phones */
- @media (max-width: 480px) {
-   .SearchBar {
-     padding: 3px 5px;
      gap: 2px;
+     padding: 4px 4px;
+     border-radius: 16px;
    }
    
    .SearchBar .InputContainer {
      min-width: 40px;
      max-width: 80px;
+     padding-right: 2px;
    }
    
    .SearchBar input {
-     padding: 5px 2px 5px 18px;
-     font-size: 10px;
-   }
-   
-   .SearchBar .InputContainer i {
-     left: 4px;
+     padding: 4px 1px 4px 16px;
      font-size: 10px;
    }
    
    .CheckboxContainer {
-     padding: 0 3px;
+     padding: 0 2px;
      font-size: 10px;
    }
    
@@ -329,30 +304,78 @@
    }
    
    .SearchBar button {
-     padding: 4px 8px;
+     padding: 4px 6px;
      font-size: 10px;
-     border-radius: 12px;
+   }
+ }
+ 
+ /* Mobile phones */
+ @media (max-width: 480px) {
+   .SearchBar {
+     padding: 2px 4px;
+     gap: 1px;
+   }
+   
+   .SearchBar .InputContainer {
+     min-width: 30px;
+     max-width: 60px;
+   }
+   
+   .SearchBar input {
+     padding: 3px 1px 3px 14px;
+     font-size: 9px;
+   }
+   
+   .SearchBar .InputContainer i {
+     left: 3px;
+     font-size: 9px;
+   }
+   
+   .CheckboxContainer {
+     padding: 0 2px;
+     font-size: 9px;
+   }
+   
+   .SearchBar button {
+     padding: 3px 6px;
+     font-size: 9px;
+     border-radius: 10px;
    }
    
    .SearchBar button i {
-     font-size: 10px;
+     font-size: 9px;
    }
  }
  
  /* Very small devices */
  @media (max-width: 360px) {
    .SearchBar {
-     padding: 2px 4px;
-     gap: 2px;
+     padding: 2px 2px;
+     gap: 1px;
    }
    
    .SearchBar .InputContainer {
-     min-width: 35px;
-     max-width: 60px;
+     min-width: 25px;
+     max-width: 50px;
    }
    
    .SearchBar input {
-     padding: 4px 1px 4px 16px;
+     padding: 3px 1px 3px 12px;
+     font-size: 8px;
+   }
+   
+   .SearchBar .InputContainer i {
+     left: 2px;
+     font-size: 8px;
+   }
+   
+   .CheckboxContainer {
+     display: none; /* Hide checkbox on very small screens */
+   }
+   
+   .SearchBar button {
+     padding: 3px 4px;
+     font-size: 8px;
    }
  }
  

@@ -175,7 +175,6 @@ public async Task<ActionResult<IEnumerable<string>>> GetApartmentAvailability(in
         public async Task<IActionResult> GetApartmentsByVille(string ville)
         {
             // Log the request
-            Console.WriteLine($"Received request for apartments in city: {ville}");
 
             var apartments = await _context.Appartements
                 .Where(a => a.Ville != null && a.Ville.Equals(ville, StringComparison.OrdinalIgnoreCase))
@@ -263,7 +262,6 @@ public async Task<ActionResult<IEnumerable<string>>> GetApartmentAvailability(in
                 await _context.SaveChangesAsync();
 
                 // Log successful creation
-                Console.WriteLine($"Successfully created apartment with ID: {appartement.Id}");
 
                 // Return a 201 Created response with the newly created resource
                 return CreatedAtAction(nameof(GetApartmentById), new { id = appartement.Id }, appartement);
@@ -301,7 +299,6 @@ public async Task<IActionResult> DeleteApartment(int id)
         await _context.SaveChangesAsync();
 
         // Log successful deletion
-        Console.WriteLine($"Successfully deleted apartment ID {id} and its associated photos");
 
         return NoContent(); // 204 No Content is the standard response for successful DELETE
     }

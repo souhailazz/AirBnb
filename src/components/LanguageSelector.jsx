@@ -10,7 +10,8 @@ const LanguageSelector = () => {
 
   return (
     <div style={{ position: 'absolute', top: 10, right: 10 }}>
-     
+      <button onClick={() => changeLanguage('fr')}>FR</button>
+      <button onClick={() => changeLanguage('en')}>EN</button>
     </div>
   );
 };
