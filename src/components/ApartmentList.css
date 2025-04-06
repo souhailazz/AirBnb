@@ -126,9 +126,9 @@
 /* Mobile Responsive Styles */
 @media screen and (max-width: 768px) {
   .ApartmentList {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-    padding: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.8rem;
+    padding: 0.8rem;
   }
 
   .ApartmentItem {
@@ -136,44 +136,7 @@
   }
 
   .ApartmentImage {
-    height: 180px;
-  }
-
-  .ApartmentDetails {
-    padding: 1rem;
-  }
-
-  .ApartmentDetails h2 {
-    font-size: 1.1rem;
-    margin-bottom: 0.4rem;
-  }
-
-  .ApartmentDetails p {
-    font-size: 0.85rem;
-    margin-bottom: 0.4rem;
-  }
-
-  .ApartmentDetails svg {
-    width: 14px;
-    height: 14px;
-    margin-right: 0.4rem;
-  }
-}
-
-/* Small Mobile Responsive Styles */
-@media screen and (max-width: 480px) {
-  .ApartmentList {
-    grid-template-columns: 1fr;
-    padding: 0.8rem;
-    gap: 0.8rem;
-  }
-
-  .ApartmentItem {
-    margin-bottom: 0.8rem;
-  }
-
-  .ApartmentImage {
-    height: 200px;
+    height: 140px;
   }
 
   .ApartmentDetails {
@@ -181,12 +144,12 @@
   }
 
   .ApartmentDetails h2 {
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin-bottom: 0.3rem;
   }
 
   .ApartmentDetails p {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     margin-bottom: 0.3rem;
   }
 
@@ -194,6 +157,43 @@
     width: 12px;
     height: 12px;
     margin-right: 0.3rem;
+  }
+}
+
+/* Small Mobile Responsive Styles */
+@media screen and (max-width: 480px) {
+  .ApartmentList {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    padding: 0.6rem;
+    gap: 0.6rem;
+  }
+
+  .ApartmentItem {
+    margin-bottom: 0.6rem;
+  }
+
+  .ApartmentImage {
+    height: 120px;
+  }
+
+  .ApartmentDetails {
+    padding: 0.6rem;
+  }
+
+  .ApartmentDetails h2 {
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .ApartmentDetails p {
+    font-size: 0.7rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .ApartmentDetails svg {
+    width: 10px;
+    height: 10px;
+    margin-right: 0.2rem;
   }
 
   /* Loading and error states for mobile */
