@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import LanguageSelector from './components/LanguageSelector';
 import SearchBar from './components/SearchBar';
 import ApartmentList from './components/ApartmentList';
@@ -28,6 +28,7 @@ function App() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Parse query parameters from URL on initial load
@@ -167,9 +168,11 @@ navigate('/Chat');
           </div>
         </div>
 
-        <div className="search-bar">
-          <SearchBar onSearch={handleSearch} />
-        </div>
+        {location.pathname === '/' && (
+          <div className="search-bar">
+            <SearchBar onSearch={handleSearch} />
+          </div>
+        )}
 
         <div className="header-right">
          
