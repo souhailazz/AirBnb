@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import './Chat.css';
 
 const Chat = ({  }) => {
+    const navigate = useNavigate();
     const [chats, setChats] = useState([]); // List of conversations
     const [messages, setMessages] = useState([]); // Messages for selected chat
     const [newMessage, setNewMessage] = useState(""); 
@@ -11,6 +13,14 @@ const Chat = ({  }) => {
     
     const sessionId = parseInt(sessionStorage.getItem('userId') || '0');
     const isAdmin = sessionId === 1; // Check if current user is admin
+
+    // Check session and redirect if not logged in
+    useEffect(() => {
+        if (!sessionId) {
+            navigate('/login');
+            return;
+        }
+    }, [sessionId, navigate]);
     
     useEffect(() => {
         if (sessionId === 0) {
