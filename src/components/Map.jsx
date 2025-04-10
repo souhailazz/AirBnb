@@ -2,18 +2,21 @@ import React from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const containerStyle = {
-  width: '1000%',  // Changed from 200% to 50% for better proportions
-  height: '400px',
-  float: 'center', // This positions the map on the right
-  marginRight: '20px', // Add some spacing from content to the left
-  borderRadius: '20px', // Optional: adds rounded corners
-  boxShadow: '0 4px 8px rgba(0,0,0,0.1)' // Optional: adds subtle shadow
+  width: '100%',
+  height: '100%',
+  borderRadius: '8px',
+  boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
 };
 
 const mapWrapperStyle = {
-  display: 'flex',
-  justifyContent: 'flex-end', // Aligns the map container to the right
-  width: '100%'
+  position: 'fixed',
+  top: '0',
+  right: '0',
+  width: '50%',
+  height: '100vh',
+  padding: '20px',
+  boxSizing: 'border-box',
+  zIndex: '10'
 };
 
 const Map = ({ locations }) => {

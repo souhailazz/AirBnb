@@ -33,7 +33,10 @@
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative; /* Add this for proper positioning */
+  height: calc(100vh - 76px); /* Adjust based on your header height */
 }
+
 
 /* Apartment list container */
 .apartment-list-container {
