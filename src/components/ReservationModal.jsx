@@ -1,23 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './ReservationModal.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faExclamationTriangle, faUser, faChild, faPaw, faCalendarAlt, faTimes, faCheck, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
 
 const ReservationModal = ({ onConfirm, onClose, loading, error, success }) => {
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [pets, setPets] = useState(0);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        navigate('/Chat');
-      }, 1000); 
-      return () => clearTimeout(timer);
-    }
-  }, [success, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,7 +21,7 @@ const ReservationModal = ({ onConfirm, onClose, loading, error, success }) => {
           <button 
             className="close-button" 
             onClick={onClose}
-            disabled={loading}
+            disabled={loading || success}
           >
             <FontAwesomeIcon icon={faTimes} />
           </button>
@@ -43,7 +32,7 @@ const ReservationModal = ({ onConfirm, onClose, loading, error, success }) => {
             <FontAwesomeIcon icon={faCheckCircle} size="2x" />
             <div>
               <h3>Reservation Created Successfully!</h3>
-              <p>Redirecting you to chat with the host...</p>
+              <p>Redirecting you to payment page...</p>
             </div>
           </div>
         )}
