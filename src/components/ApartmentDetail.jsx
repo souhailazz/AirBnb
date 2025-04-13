@@ -191,7 +191,34 @@ const ApartmentDetail = () => {
       throw error;
     }
   };
+  const processPayment = async (reservationId, totalAmount) => {
+    try {
+      const response = await fetch('https://backend-production-886a.up.railway.app/api/Payments/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reservationId: reservationId,
+          amount: totalAmount
+        })
+      });
   
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to create payment session: ${errorText}`);
+      }
+  
+      const { checkoutUrl } = await response.json();
+      
+      // Redirect to Stripe checkout
+      window.location.href = checkoutUrl;
+      
+    } catch (error) {
+      console.error('Payment processing error:', error);
+      alert('Failed to process payment: ' + error.message);
+    }
+  };
   const sendAdminMessage = async (reservationId, reservationDetails) => {
     try {
       const adminId = 1; // Admin ID
@@ -253,7 +280,7 @@ const ApartmentDetail = () => {
         navigate('/login');
         return;
       }
-
+  
       setReservationDetails(details);
       if (!startDate || !endDate) {
         alert("Please select check-in and check-out dates.");
@@ -270,23 +297,25 @@ const ApartmentDetail = () => {
         const reservationResponse = await createReservation(details);
         console.log("Reservation created:", reservationResponse);
         
-        // Use id_reservation from the response if available, otherwise fetch the most recent
-        let reservationId = reservationResponse && reservationResponse.id_reservation 
-          ? reservationResponse.id_reservation 
-          : null;
+        // Get the reservation ID from the response
+        const reservationId = reservationResponse.reservation && reservationResponse.reservation.id;
         
-        // Send message to admin with reservation details
-        const messageSent = await sendAdminMessage(reservationId, details);
-        console.log("Message sent status:", messageSent);
+        if (!reservationId) {
+          throw new Error('No reservation ID returned from server');
+        }
         
-        // Show success message
+        // Calculate total price for the payment
+        const nights = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+        const totalPrice = apartment.prix * nights + apartment.frais_menage;
+        
+        // Show success message before redirecting to payment
         setReservationSuccess(true);
         
-        // Wait a moment to show the success message before closing the modal
+        // Process payment with Stripe
         setTimeout(() => {
-          setReservationModalOpen(false);
-          setMessagingModalOpen(true);
-        }, 2000);
+          processPayment(reservationId, totalPrice);
+        }, 1500);
+        
       } catch (error) {
         console.error("Reservation error:", error);
         setReservationError(error.message || 'Failed to create reservation');

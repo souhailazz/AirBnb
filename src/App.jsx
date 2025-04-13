@@ -14,7 +14,8 @@ import { FaComments,FaUser, FaHome, FaSignOutAlt, FaUserCog, FaEdit } from 'reac
 import './App.css';
 import Edit from './components/Edit';
 import Chat from './components/Chat';
-
+import PaymentSuccess from './components/PaymentSuccess';
+import PaymentCancel from './components/PaymentCancel';
 function AppWrapper() {
   return (
     <Router>
@@ -229,7 +230,8 @@ navigate('/Chat');
         <Route path="/MyReservations" element={<MyReservations />} />
         <Route path="/Chat" element={<Chat/>} />
         <Route path="/Edit" element={<Edit/>} />
-
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<PaymentCancel />} />
 
       </Routes>
     </div>
