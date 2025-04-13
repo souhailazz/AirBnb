@@ -4,7 +4,7 @@ import './ApartmentDetail.css';
 import BookingCalendar from './BookingCalendar';
 import Map from './Map';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWifi, faTv, faSnowflake, faUtensils, faCar, faCoffee, faBaby, faBroom } from '@fortawesome/free-solid-svg-icons';
+import { faWifi, faTv, faSnowflake, faUtensils, faCar, faCoffee, faBaby, faBroom, faSpinner, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import ReservationModal from './ReservationModal';
@@ -15,14 +15,17 @@ const ApartmentDetail = () => {
   const navigate = useNavigate();
   const [apartment, setApartment] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [reservationLoading, setReservationLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [reservationError, setReservationError] = useState(null);
+  const [reservationSuccess, setReservationSuccess] = useState(false);
   const [unavailableDates, setUnavailableDates] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [isReservationModalOpen, setReservationModalOpen] = useState(false);
   const [isMessagingModalOpen, setMessagingModalOpen] = useState(false);
   const [reservationDetails, setReservationDetails] = useState({ adults: 0, children: 0, pets: 0 });
-  const [imageLoading, setImageLoading] = useState(true); // New state for image loading
+  const [imageLoading, setImageLoading] = useState(true);
   const [currentReservationId, setCurrentReservationId] = useState(null);
   const sessionId = sessionStorage.getItem('userId'); // Retrieve session ID dynamically
 
@@ -54,10 +57,12 @@ const ApartmentDetail = () => {
       return null;
     }
   };
+  
   useEffect(() => {
     fetchApartmentDetails(id);
     fetchApartmentAvailability(id);
   }, [id]);
+  
   const handleDateSelect = (startDate, endDate) => {
     setStartDate(startDate);
     setEndDate(endDate);
@@ -77,10 +82,10 @@ const ApartmentDetail = () => {
       setLoading(false);
     }
   };
+  
   const handleImageLoad = () => {
     setImageLoading(false);   
   };
-
 
   const fetchApartmentAvailability = async (id) => {
     try {
@@ -93,6 +98,7 @@ const ApartmentDetail = () => {
       setError(`Error fetching availability data: ${err.message}`);
     }
   };
+  
   const createPayment = async (total, method) => {
     try {
       const paymentData = {
@@ -110,20 +116,21 @@ const ApartmentDetail = () => {
       });
   
       const data = await response.text(); // First get the response as text
-    try {
-      const jsonData = JSON.parse(data); // Try to parse it as JSON
-      if (!response.ok) {
-        throw new Error(jsonData.message || 'Failed to create payment');
+      try {
+        const jsonData = JSON.parse(data); // Try to parse it as JSON
+        if (!response.ok) {
+          throw new Error(jsonData.message || 'Failed to create payment');
+        }
+        return jsonData;
+      } catch (parseError) {
+        throw new Error(data || 'Failed to create payment');
       }
-      return jsonData;
-    } catch (parseError) {
-      throw new Error(data || 'Failed to create payment');
+    } catch (error) {
+      console.error('Error creating payment:', error);
+      throw error;
     }
-  } catch (error) {
-    console.error('Error creating payment:', error);
-    throw error;
-  }
   };
+  
   const sessionIdclient = sessionStorage.getItem('userId'); // Retrieve session ID dynamically
 
   const createReservation = async (reservationDetails) => {
@@ -184,6 +191,7 @@ const ApartmentDetail = () => {
       throw error;
     }
   };
+  
   const sendAdminMessage = async (reservationId, reservationDetails) => {
     try {
       const adminId = 1; // Admin ID
@@ -237,6 +245,7 @@ const ApartmentDetail = () => {
       return false;
     }
   };
+  
   const handleReservationConfirm = async (details) => {
     try {
       if (!sessionId) {
@@ -251,29 +260,54 @@ const ApartmentDetail = () => {
         return;
       }
       
-      // Create the reservation only once and save the response
-      const reservationResponse = await createReservation(details);
-      console.log("Reservation created:", reservationResponse);
+      // Set loading state to true and clear any previous errors/success
+      setReservationLoading(true);
+      setReservationError(null);
+      setReservationSuccess(false);
       
-      // Use id_reservation from the response if available, otherwise fetch the most recent
-      let reservationId = reservationResponse && reservationResponse.id_reservation 
-        ? reservationResponse.id_reservation 
-        : null;
-      
-      // Send message to admin with reservation details
-      const messageSent = await sendAdminMessage(reservationId, details);
-      console.log("Message sent status:", messageSent);
-      
-      setReservationModalOpen(false);
-      setMessagingModalOpen(true);
+      try {
+        // Create the reservation
+        const reservationResponse = await createReservation(details);
+        console.log("Reservation created:", reservationResponse);
+        
+        // Use id_reservation from the response if available, otherwise fetch the most recent
+        let reservationId = reservationResponse && reservationResponse.id_reservation 
+          ? reservationResponse.id_reservation 
+          : null;
+        
+        // Send message to admin with reservation details
+        const messageSent = await sendAdminMessage(reservationId, details);
+        console.log("Message sent status:", messageSent);
+        
+        // Show success message
+        setReservationSuccess(true);
+        
+        // Wait a moment to show the success message before closing the modal
+        setTimeout(() => {
+          setReservationModalOpen(false);
+          setMessagingModalOpen(true);
+        }, 2000);
+      } catch (error) {
+        console.error("Reservation error:", error);
+        setReservationError(error.message || 'Failed to create reservation');
+        // Don't close the modal, let the user see the error
+      } finally {
+        setReservationLoading(false);
+      }
     } catch (error) {
-      console.error("Reservation error:", error);
-      alert('Failed to create reservation: ' + error.message);
+      console.error("Reservation setup error:", error);
+      alert('Failed to set up reservation: ' + error.message);
     }
   };
 
-  if (loading) return <div className="loading">Loading apartment details...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (loading) return (
+    <div className="loading-container">
+      <FontAwesomeIcon icon={faSpinner} spin size="3x" />
+      <p>Loading apartment details...</p>
+    </div>
+  );
+  
+  if (error) return <div className="error-container">{error}</div>;
 
   return (
     <div className="ApartmentDetail futuristic">
@@ -281,7 +315,7 @@ const ApartmentDetail = () => {
         <>
           <h1 className="apartment-title">{apartment.titre}</h1>
           <div className="apartment-images">
-          <Carousel 
+            <Carousel 
               showArrows={true} 
               infiniteLoop={true} 
               autoPlay={true} 
@@ -349,18 +383,17 @@ const ApartmentDetail = () => {
           </div>
 
           <BookingCalendar 
-  unavailableDates={unavailableDates}
-  onDateSelect={handleDateSelect}
-  selectedStartDate={startDate}
-  selectedEndDate={endDate}
-/>
-<div className="date-selection">
-  <p><strong>Selected Check-in Date:</strong> {startDate ? startDate.toDateString() : "Not selected"}</p>
-  <p><strong>Selected Check-out Date:</strong> {endDate ? endDate.toDateString() : "Not selected"}</p>
-</div> 
+            unavailableDates={unavailableDates}
+            onDateSelect={handleDateSelect}
+            selectedStartDate={startDate}
+            selectedEndDate={endDate}
+          />
+          <div className="date-selection">
+            <p><strong>Selected Check-in Date:</strong> {startDate ? startDate.toDateString() : "Not selected"}</p>
+            <p><strong>Selected Check-out Date:</strong> {endDate ? endDate.toDateString() : "Not selected"}</p>
+          </div> 
           
-          
-                 <button 
+          <button 
             className="reserve-button" 
             onClick={() => {
               if (!sessionId) {
@@ -377,8 +410,34 @@ const ApartmentDetail = () => {
       ) : (
         <div>No apartment details available</div>
       )}
- {isReservationModalOpen && <ReservationModal onConfirm={handleReservationConfirm} onClose={() => setReservationModalOpen(false)} />}
- {isMessagingModalOpen && <MessagingModal reservationDetails={reservationDetails} onClose={() => setMessagingModalOpen(false)} />}
+      
+      {isReservationModalOpen && (
+        <ReservationModal 
+          onConfirm={handleReservationConfirm} 
+          onClose={() => setReservationModalOpen(false)}
+          loading={reservationLoading}
+          success={reservationSuccess}
+          error={reservationError}
+        />
+      )}
+      
+      {isMessagingModalOpen && (
+        <MessagingModal 
+          reservationDetails={reservationDetails} 
+          onClose={() => setMessagingModalOpen(false)} 
+        />
+      )}
+      
+      {/* Full screen loading overlay for reservation processing */}
+      {reservationLoading && (
+        <div className="loading-overlay">
+          <div className="loading-content">
+            <FontAwesomeIcon icon={faSpinner} spin size="3x" />
+            <p>Creating your reservation...</p>
+            <p className="loading-subtitle">Please wait, this may take a moment</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
