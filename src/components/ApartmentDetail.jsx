@@ -193,6 +193,8 @@ const ApartmentDetail = () => {
   };
   const processPayment = async (reservationId, totalAmount) => {
     try {
+      sessionStorage.setItem('lastApartmentId', id);
+
       const response = await fetch('https://backend-production-886a.up.railway.app/api/Payments/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -200,7 +202,9 @@ const ApartmentDetail = () => {
         },
         body: JSON.stringify({
           reservationId: reservationId,
-          amount: totalAmount
+          amount: totalAmount,
+          returnUrl: `${window.location.origin}/apartments/${id}` // Add return URL with correct ID
+
         })
       });
   
