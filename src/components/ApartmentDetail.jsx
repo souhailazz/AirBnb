@@ -59,9 +59,18 @@ const ApartmentDetail = () => {
   };
   
   useEffect(() => {
-    fetchApartmentDetails(id);
-    fetchApartmentAvailability(id);
-  }, [id]);
+    // Check if ID is undefined and try to recover from session storage
+    const apartmentId = id || sessionStorage.getItem('lastApartmentId');
+    
+    if (apartmentId) {
+      fetchApartmentDetails(apartmentId);
+      fetchApartmentAvailability(apartmentId);
+    } else {
+      setError('Invalid apartment ID');
+      // Optionally redirect to apartments listing
+      // navigate('/apartments');
+    }
+  }, [id, navigate]);
   
   const handleDateSelect = (startDate, endDate) => {
     setStartDate(startDate);
@@ -69,6 +78,12 @@ const ApartmentDetail = () => {
   };
   
   const fetchApartmentDetails = async (id) => {
+    if (!id) {
+      console.error('No apartment ID provided for apartment details');
+      setError('Invalid apartment ID');
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     try {
@@ -88,6 +103,11 @@ const ApartmentDetail = () => {
   };
 
   const fetchApartmentAvailability = async (id) => {
+    if (!id) {
+      console.error('No apartment ID provided for availability check');
+      return;
+    }
+    
     try {
       const response = await fetch(`https://backend-production-886a.up.railway.app/api/Apartments/GetApartmentAvailability/${id}`);
       if (!response.ok) throw new Error(`Error fetching availability data`);
@@ -191,38 +211,49 @@ const ApartmentDetail = () => {
       throw error;
     }
   };
-  const processPayment = async (reservationId, totalAmount) => {
-    try {
-      sessionStorage.setItem('lastApartmentId', id);
-
-      const response = await fetch('https://backend-production-886a.up.railway.app/api/Payments/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          reservationId: reservationId,
-          amount: totalAmount,
-          returnUrl: `${window.location.origin}/apartments/${id}` // Add return URL with correct ID
-
-        })
-      });
   
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to create payment session: ${errorText}`);
-      }
-  
-      const { checkoutUrl } = await response.json();
-      
-      // Redirect to Stripe checkout
-      window.location.href = checkoutUrl;
-      
-    } catch (error) {
-      console.error('Payment processing error:', error);
-      alert('Failed to process payment: ' + error.message);
+  // Fix for the processPayment function in ApartmentDetail.jsx
+const processPayment = async (reservationId, totalAmount) => {
+  try {
+    // Store current apartment ID in sessionStorage before payment redirect
+    sessionStorage.setItem('lastApartmentId', id);
+    
+    const response = await fetch('https://backend-production-886a.up.railway.app/api/Payments/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        reservationId: reservationId,
+        amount: totalAmount,
+        returnUrl: `${window.location.origin}/apartments/${id}` // Add return URL with correct ID
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to create payment session: ${errorText}`);
     }
-  };
+
+    // Fix: Extract the URL correctly from the response
+    const data = await response.json();
+    const checkoutUrl = data.url || data.Url; 
+    
+    console.log("Received checkout URL:", checkoutUrl);
+    
+    if (!checkoutUrl) {
+      throw new Error('No checkout URL received from server');
+    }
+    
+    // Redirect to Stripe checkout
+    window.location.href = checkoutUrl;
+    
+  } catch (error) {
+    console.error('Payment processing error:', error);
+    alert('Failed to process payment: ' + error.message);
+  }
+};
+  
   const sendAdminMessage = async (reservationId, reservationDetails) => {
     try {
       const adminId = 1; // Admin ID
