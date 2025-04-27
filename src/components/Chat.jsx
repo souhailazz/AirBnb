@@ -10,6 +10,7 @@ const Chat = ({  }) => {
     const [selectedChat, setSelectedChat] = useState(null); // Active chat
     const [reservationDecided, setReservationDecided] = useState(false); // Track if reservation has been decided
     const [reservationStatuses, setReservationStatuses] = useState({}); // Keep track of reservation statuses
+    const [processingPayment, setProcessingPayment] = useState(false); // Flag for payment processing state
     
     const sessionId = parseInt(sessionStorage.getItem('userId') || '0');
     const isAdmin = sessionId === 1; // Check if current user is admin
@@ -115,6 +116,94 @@ const Chat = ({  }) => {
         }
     };
 
+    // Create Stripe checkout session and send link via message
+    const createAndSendStripeCheckout = async (reservationId) => {
+        try {
+            setProcessingPayment(true);
+            
+            // Fetch reservation details to get apartment ID and calculate total
+            const reservationResponse = await fetch(`https://backend-production-886a.up.railway.app/api/Reservation/${reservationId}`);
+            if (!reservationResponse.ok) {
+                throw new Error("Failed to fetch reservation details");
+            }
+            
+            const reservationData = await reservationResponse.json();
+            
+            // Fetch apartment details to get pricing
+            const apartmentResponse = await fetch(`https://backend-production-886a.up.railway.app/api/Apartments/${reservationData.id_appartement}`);
+            if (!apartmentResponse.ok) {
+                throw new Error("Failed to fetch apartment details");
+            }
+            
+            const apartmentData = await apartmentResponse.json();
+            
+            // Calculate number of nights
+            const startDate = new Date(reservationData.date_depart);
+            const endDate = new Date(reservationData.date_sortie);
+            const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+            
+            // Calculate total price
+            const totalAmount = apartmentData.prix * nights + apartmentData.frais_menage;
+            
+            // Create Stripe checkout session
+            const response = await fetch('https://backend-production-886a.up.railway.app/api/Payments/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    reservationId: reservationId,
+                    amount: totalAmount,
+                    returnUrl: `${window.location.origin}/apartments/${reservationData.id_appartement}`
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to create payment session: ${errorText}`);
+            }
+
+            // Extract the checkout URL from the response
+            const data = await response.json();
+            const checkoutUrl = data.url || data.Url;
+            
+            if (!checkoutUrl) {
+                throw new Error('No checkout URL received from server');
+            }
+            
+            // Send the payment link to the client via chat
+            const paymentMessage = {
+                reservationId: selectedChat.reservationId,
+                senderId: sessionId, // Admin
+                receiverId: selectedChat.clientId, // Client
+                content: `Your reservation has been approved! Please complete your payment using this link: ${checkoutUrl}`
+            };
+            
+            const messageSent = await fetch("https://backend-production-886a.up.railway.app/api/message", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(paymentMessage)
+            });
+            
+            if (!messageSent.ok) {
+                throw new Error("Failed to send payment link message");
+            }
+            
+            // Refresh messages to show the payment link
+            fetch(`https://backend-production-886a.up.railway.app/api/message/${selectedChat.reservationId}`)
+                .then(res => res.json())
+                .then(data => setMessages(data))
+                .catch(error => console.error("Error refreshing messages:", error));
+                
+            alert("Payment link generated and sent to client!");
+        } catch (error) {
+            console.error("Error creating payment session:", error);
+            alert(`Failed to generate payment link: ${error.message}`);
+        } finally {
+            setProcessingPayment(false);
+        }
+    };
+
     // Update reservation status
     const updateReservationStatus = async (reservationId, status) => {
         try {
@@ -152,7 +241,7 @@ const Chat = ({  }) => {
                 [reservationId]: status
             }));
             
-            // Set that a decision has been made - this will hide the buttons
+            // Set that a decision has been made
             setReservationDecided(true);
 
             // Refresh messages
@@ -160,6 +249,11 @@ const Chat = ({  }) => {
                 .then(res => res.json())
                 .then(data => setMessages(data))
                 .catch(error => console.error("Error fetching messages:", error));
+
+            // If approved, generate and send payment link
+            if (status === "Confirmed") {
+                await createAndSendStripeCheckout(reservationId);
+            }
 
             alert(`Reservation ${status} successfully!`);
         } catch (error) {
@@ -209,14 +303,31 @@ const Chat = ({  }) => {
                             <button 
                                 className="approve-btn"
                                 onClick={() => updateReservationStatus(selectedChat.reservationId, "Confirmed")}
+                                disabled={processingPayment}
                             >
-                                Approve Reservation
+                                {processingPayment ? "Processing..." : "Approve Reservation"}
                             </button>
                             <button 
                                 className="deny-btn"
                                 onClick={() => updateReservationStatus(selectedChat.reservationId, "Denied")}
+                                disabled={processingPayment}
                             >
                                 Deny Reservation
+                            </button>
+                        </div>
+                    )}
+                    
+                    {/* Admin-only: Send Payment Link button - only show if approved but payment not sent */}
+                    {isAdmin && 
+                     reservationStatuses[selectedChat.reservationId] === "Confirmed" && 
+                     !messages.some(msg => msg.content.includes("complete your payment using this link")) && (
+                        <div className="admin-actions">
+                            <button 
+                                className="payment-btn"
+                                onClick={() => createAndSendStripeCheckout(selectedChat.reservationId)}
+                                disabled={processingPayment}
+                            >
+                                {processingPayment ? "Processing..." : "Send Payment Link"}
                             </button>
                         </div>
                     )}
@@ -224,7 +335,24 @@ const Chat = ({  }) => {
                     <div className="messages">
                         {messages.map(msg => (
                             <div key={msg.id} className={msg.senderId === sessionId ? "sent" : "received"}>
-                                <p>{msg.content}</p>
+                                {/* Special rendering for payment links */}
+                                {msg.content.includes("complete your payment using this link") ? (
+                                    <div className="payment-message">
+                                        <p>
+                                            {msg.content.split("using this link:")[0]} using this link:
+                                        </p>
+                                        <a 
+                                            href={msg.content.split("using this link:")[1].trim()} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="payment-link"
+                                        >
+                                            Complete Payment
+                                        </a>
+                                    </div>
+                                ) : (
+                                    <p>{msg.content}</p>
+                                )}
                                 <small>{new Date(msg.sentAt).toLocaleTimeString()}</small>
                             </div>
                         ))}
@@ -236,8 +364,25 @@ const Chat = ({  }) => {
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             placeholder="Type a message..."
+                            onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
+                            disabled={processingPayment}
                         />
-                        <button onClick={sendMessage}>Send</button>
+                        <button 
+                            onClick={sendMessage}
+                            disabled={processingPayment}
+                        >
+                            Send
+                        </button>
+                    </div>
+                </div>
+            )}
+            
+            {/* Loading overlay for payment processing */}
+            {processingPayment && (
+                <div className="loading-overlay">
+                    <div className="loading-content">
+                        <div className="loading-spinner"></div>
+                        <p>Generating payment link...</p>
                     </div>
                 </div>
             )}

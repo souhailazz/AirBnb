@@ -182,7 +182,8 @@ const ApartmentDetail = () => {
         nbr_adultes: parseInt(reservationDetails.adults, 10),
         nbr_enfants: parseInt(reservationDetails.children, 10),
         animaux: reservationDetails.pets > 0,
-        id_paiement: paiement.id  
+        id_paiement: paiement.id,
+        etat: "Pending" // Set initial state to Pending
       };
   
       console.log("Sending reservation request:", JSON.stringify(reservationDto, null, 2));
@@ -212,48 +213,7 @@ const ApartmentDetail = () => {
     }
   };
   
-  // Fix for the processPayment function in ApartmentDetail.jsx
-const processPayment = async (reservationId, totalAmount) => {
-  try {
-    // Store current apartment ID in sessionStorage before payment redirect
-    sessionStorage.setItem('lastApartmentId', id);
-    
-    const response = await fetch('https://backend-production-886a.up.railway.app/api/Payments/create-checkout-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        reservationId: reservationId,
-        amount: totalAmount,
-        returnUrl: `${window.location.origin}/apartments/${id}` // Add return URL with correct ID
-      })
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to create payment session: ${errorText}`);
-    }
-
-    // Fix: Extract the URL correctly from the response
-    const data = await response.json();
-    const checkoutUrl = data.url || data.Url; 
-    
-    console.log("Received checkout URL:", checkoutUrl);
-    
-    if (!checkoutUrl) {
-      throw new Error('No checkout URL received from server');
-    }
-    
-    // Redirect to Stripe checkout
-    window.location.href = checkoutUrl;
-    
-  } catch (error) {
-    console.error('Payment processing error:', error);
-    alert('Failed to process payment: ' + error.message);
-  }
-};
-  
+  // Function to send admin message with reservation details
   const sendAdminMessage = async (reservationId, reservationDetails) => {
     try {
       const adminId = 1; // Admin ID
@@ -268,15 +228,25 @@ const processPayment = async (reservationId, totalAmount) => {
         throw new Error(`Invalid reservation ID: ${reservationId}`);
       }
       
-      // Simple message content
+      // Calculate price information
+      const nights = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+      const nightlyPrice = apartment.prix;
+      const cleaningFee = apartment.frais_menage;
+      const totalPrice = nightlyPrice * nights + cleaningFee;
+      
+      // Enhanced message content with pricing details
       const messageContent = `New reservation request #${reservationId}:\n` +
-        `Apartment: #${id}\n` +
+        `Apartment: ${apartment.titre} (#${id})\n` +
         `Check-in: ${startDate ? startDate.toDateString() : 'Not specified'}\n` +
         `Check-out: ${endDate ? endDate.toDateString() : 'Not specified'}\n` +
+        `Duration: ${nights} nights\n` +
         `Adults: ${reservationDetails.adults}\n` +
         `Children: ${reservationDetails.children}\n` +
         `Pets: ${reservationDetails.pets > 0 ? 'Yes' : 'No'}\n` +
-        `Please review this reservation.`;
+        `Price: ${nightlyPrice} EUR/night (${nightlyPrice * nights} EUR total)\n` +
+        `Cleaning Fee: ${cleaningFee} EUR\n` +
+        `Total Price: ${totalPrice} EUR\n\n` +
+        `Please APPROVE or DENY this reservation. After approval, a payment link will be sent to the client.`;
       
       // Format the message data as expected by the API - using the same format as in Chat.jsx
       const messageData = {
@@ -339,22 +309,20 @@ const processPayment = async (reservationId, totalAmount) => {
           throw new Error('No reservation ID returned from server');
         }
         
-        // Calculate total price for the payment
-        const nights = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
-        const totalPrice = apartment.prix * nights + apartment.frais_menage;
+        // Send message to admin about the new reservation
+        await sendAdminMessage(reservationId, details);
         
-        // Show success message before redirecting to payment
+        // Show success message
         setReservationSuccess(true);
         
-        // Process payment with Stripe
+        // After a short delay, redirect to chat page so user can see conversation
         setTimeout(() => {
-          processPayment(reservationId, totalPrice);
-        }, 1500);
+          navigate('/chat');
+        }, 2000);
         
       } catch (error) {
         console.error("Reservation error:", error);
         setReservationError(error.message || 'Failed to create reservation');
-        // Don't close the modal, let the user see the error
       } finally {
         setReservationLoading(false);
       }
@@ -497,8 +465,19 @@ const processPayment = async (reservationId, totalAmount) => {
         <div className="loading-overlay">
           <div className="loading-content">
             <FontAwesomeIcon icon={faSpinner} spin size="3x" />
-            <p>Creating your reservation...</p>
-            <p className="loading-subtitle">Please wait, this may take a moment</p>
+            <p>Creating your reservation request...</p>
+            <p className="loading-subtitle">You'll be redirected to messages to track approval status</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Success message after reservation is created */}
+      {reservationSuccess && (
+        <div className="success-overlay">
+          <div className="success-content">
+            <FontAwesomeIcon icon={faCheckCircle} size="3x" />
+            <p>Reservation request submitted!</p>
+            <p className="success-subtitle">Redirecting to messages... You'll receive payment information after admin approval.</p>
           </div>
         </div>
       )}
