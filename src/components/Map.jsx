@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const containerStyle = {
@@ -20,6 +20,23 @@ const mapWrapperStyle = {
 };
 
 const Map = ({ locations }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Initial check
+    checkMobile();
+
+    // Add event listener
+    window.addEventListener('resize', checkMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Adding default locations in Paris if none are provided
   const defaultLocations = [
     { lat: 48.8584, lng: 2.2945 }, // Eiffel Tower
@@ -28,8 +45,25 @@ const Map = ({ locations }) => {
   ];
   const center = locations?.length > 0 ? locations[0] : defaultLocations[0];
 
+  const getMapWrapperStyle = () => {
+    if (isMobile) {
+      return {
+        position: 'fixed',
+        bottom: '0',
+        left: '0',
+        width: '100%',
+        height: '40vh',
+        padding: '10px',
+        boxSizing: 'border-box',
+        zIndex: '10',
+        background: 'white'
+      };
+    }
+    return mapWrapperStyle;
+  };
+
   return (
-    <div style={mapWrapperStyle}>
+    <div style={getMapWrapperStyle()}>
       <LoadScript googleMapsApiKey="AIzaSyAQlyaR2Dr0fJPTPk3otltkPnyRekZCPpg">
         <GoogleMap
           mapContainerStyle={containerStyle}

@@ -20,6 +20,7 @@
   padding: 2rem;
   max-width: 1500px;
   margin: 0 auto;
+  position: relative;
 }
 
 .ApartmentItem {
@@ -126,13 +127,16 @@
 /* Mobile Responsive Styles */
 @media screen and (max-width: 768px) {
   .ApartmentList {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1rem;
     padding: 1rem;
+    padding-bottom: calc(40vh + 1rem); /* Add space for the map */
   }
 
   .ApartmentItem {
     margin-bottom: 0.5rem;
+    width: 100%;
+    max-width: 100%;
   }
 
   .ApartmentImage {
@@ -160,21 +164,23 @@
   }
 }
 
-/* Small Mobile Responsive Styles - UPDATED FOR EXTREME COMPACTNESS */
+/* Small Mobile Responsive Styles */
 @media screen and (max-width: 600px) {
   .ApartmentList {
-    grid-template-columns: 1fr; /* Force one column */
+    grid-template-columns: 1fr;
     padding: 0.5rem;
+    padding-bottom: calc(40vh + 0.5rem);
     gap: 0.5rem;
   }
 
   .ApartmentItem {
     margin-bottom: 0.5rem;
-    max-height: 250px; /* Significantly reduced height */
+    width: 100%;
+    max-width: 100%;
   }
 
   .ApartmentImage {
-    height: 100px; /* Much smaller image */
+    height: 120px;
   }
 
   .ApartmentDetails {
@@ -185,13 +191,12 @@
   .ApartmentDetails h2 {
     font-size: 0.9rem;
     margin-bottom: 0.2rem;
-    -webkit-line-clamp: 1; /* Show only one line of title */
+    -webkit-line-clamp: 1;
   }
 
   .ApartmentDetails p {
     font-size: 0.75rem;
     margin-bottom: 0.2rem;
-    min-height: 0; /* Allow content to determine height */
   }
 
   .ApartmentDetails svg {
@@ -201,56 +206,54 @@
   }
 }
 
-/* Very Small Mobile Devices - UPDATED WITH MORE EXTREME REDUCTION */
+/* Very Small Mobile Devices */
 @media screen and (max-width: 480px) {
   .ApartmentList {
     gap: 0.4rem;
     padding: 0.4rem;
-    margin-right: 0;
-    padding-right: 0;
-    width: 100%;
-    grid-template-columns: 1fr;
+    padding-bottom: calc(40vh + 0.4rem);
   }
   
   .ApartmentItem {
     margin-bottom: 0.4rem;
-    max-height: max-content; /* Even more reduced height */
-    display: flex;
-    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
   }
   
   .ApartmentImage {
-    height: 100px; /* Extremely reduced image size */
+    height: 100px;
   }
   
   .ApartmentDetails {
     padding: 0.4rem;
     gap: 0.1rem;
-    margin-right: 100px;
   }
   
   .ApartmentDetails h2 {
-    font-size: 1rem;
+    font-size: 0.85rem;
     margin-bottom: 0.1rem;
-    font-weight: bold;
   }
   
   .ApartmentDetails p {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     margin-bottom: 0.1rem;
-    line-height: 1.2;
   }
-  
-  /* Compact info layout - horizontal arrangement */
-  .ApartmentDetailInfo {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.3rem;
+}
+
+/* Map container styles for mobile */
+@media screen and (max-width: 768px) {
+  .MapContainer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40vh;
+    z-index: 2;
   }
-  
-  .ApartmentDetailInfo p {
-    margin-right: 0.5rem;
-    margin-bottom: 0;
+
+  .ApartmentItemsContainer {
+    margin-bottom: 40vh; /* Space for the map */
+    padding-bottom: 1rem;
   }
 }
 
