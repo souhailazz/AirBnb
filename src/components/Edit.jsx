@@ -228,333 +228,303 @@ const Edit = () => {
   // Render apartment edit form
   if (editingApartment && formData) {
     return (
-      <>
-        
-        <div className="container mx-auto p-4">
-          <h1 className="text-2xl font-bold mb-6">Edit Apartment</h1>
+      <div className="container">
+        <h1>Edit Apartment</h1>
 
-          {loading && <div className="text-center p-2">Saving changes...</div>}
+        {loading && <div className="loading-state">Saving changes...</div>}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Information Section */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1">Title</label>
-                  <input
-                    type="text"
-                    name="titre"
-                    value={formData.titre || ""}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">City</label>
-                  <input
-                    type="text"
-                    name="ville"
-                    value={formData.ville || ""}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    required
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block mb-1">Address</label>
-                  <input
-                    type="text"
-                    name="adresse"
-                    value={formData.adresse || ""}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    required
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block mb-1">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description || ""}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded h-32"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Pricing & Capacity Section */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Pricing & Capacity</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block mb-1">Price per Night (€)</label>
-                  <input
-                    type="number"
-                    name="prix"
-                    value={formData.prix || 0}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Total Capacity</label>
-                  <input
-                    type="number"
-                    name="capacite"
-                    value={formData.capacite || 0}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    min="1"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Minimum Nights</label>
-                  <input
-                    type="number"
-                    name="nombre_min_nuits"
-                    value={formData.nombre_min_nuits || 1}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    min="1"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Adults</label>
-                  <input
-                    type="number"
-                    name="nbrAdultes"
-                    value={formData.nbrAdultes || 0}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    min="1"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Children</label>
-                  <input
-                    type="number"
-                    name="nbrEnfants"
-                    value={formData.nbrEnfants || 0}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    min="0"
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1">Cleaning Fee (€)</label>
-                  <input
-                    type="number"
-                    name="frais_menage"
-                    value={formData.frais_menage || 0}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Amenities Section */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Amenities</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="accepteAnimaux"
-                    checked={formData.accepteAnimaux || false}
-                    onChange={handleChange}
-                    className="mr-2 h-5 w-5"
-                  />
-                  <label>Accepts Pets</label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="chauffage"
-                    checked={formData.chauffage || false}
-                    onChange={handleChange}
-                    className="mr-2 h-5 w-5"
-                  />
-                  <label>Heating</label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="wifi"
-                    checked={formData.wifi || false}
-                    onChange={handleChange}
-                    className="mr-2 h-5 w-5"
-                  />
-                  <label>WiFi</label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="television"
-                    checked={formData.television || false}
-                    onChange={handleChange}
-                    className="mr-2 h-5 w-5"
-                  />
-                  <label>Television</label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="lave_Linge"
-                    checked={formData.lave_Linge || false}
-                    onChange={handleChange}
-                    className="mr-2 h-5 w-5"
-                  />
-                  <label>Washing Machine</label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="cuisine_equipee"
-                    checked={formData.cuisine_equipee || false}
-                    onChange={handleChange}
-                    className="mr-2 h-5 w-5"
-                  />
-                  <label>Equipped Kitchen</label>
-                </div>
-              </div>
-            </div>
-
-            {/* Photos Section - Modified to use a single textarea */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Photos</h2>
-              
+        <form onSubmit={handleSubmit} className="form-grid">
+          {/* Basic Information Section */}
+          <div className="form-section">
+            <h2>Basic Information</h2>
+            <div className="form-grid">
               <div>
-                <label className="block mb-1">Photo URLs (one per line)</label>
-                <p className="text-sm text-gray-600 mb-2">Each URL will be displayed as a separate photo</p>
-                <textarea
-                  value={photoUrlsText}
-                  onChange={handlePhotoTextChange}
-                  placeholder="Enter photo URLs, one per line"
-                  className="w-full p-2 border rounded h-40 font-mono"
-                  rows={8}
+                <label>Title</label>
+                <input
+                  type="text"
+                  name="titre"
+                  value={formData.titre || ""}
+                  onChange={handleChange}
+                  required
                 />
               </div>
-              
-              {/* Preview current photos count */}
-              <div className="mt-2 text-sm">
+
+              <div>
+                <label>City</label>
+                <input
+                  type="text"
+                  name="ville"
+                  value={formData.ville || ""}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label>Address</label>
+                <input
+                  type="text"
+                  name="adresse"
+                  value={formData.adresse || ""}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label>Description</label>
+                <textarea
+                  name="description"
+                  value={formData.description || ""}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Pricing & Capacity Section */}
+          <div className="form-section">
+            <h2>Pricing & Capacity</h2>
+            <div className="form-grid">
+              <div>
+                <label>Price per Night (€)</label>
+                <input
+                  type="number"
+                  name="prix"
+                  value={formData.prix || 0}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+
+              <div>
+                <label>Total Capacity</label>
+                <input
+                  type="number"
+                  name="capacite"
+                  value={formData.capacite || 0}
+                  onChange={handleChange}
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div>
+                <label>Minimum Nights</label>
+                <input
+                  type="number"
+                  name="nombre_min_nuits"
+                  value={formData.nombre_min_nuits || 1}
+                  onChange={handleChange}
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div>
+                <label>Adults</label>
+                <input
+                  type="number"
+                  name="nbrAdultes"
+                  value={formData.nbrAdultes || 0}
+                  onChange={handleChange}
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div>
+                <label>Children</label>
+                <input
+                  type="number"
+                  name="nbrEnfants"
+                  value={formData.nbrEnfants || 0}
+                  onChange={handleChange}
+                  min="0"
+                />
+              </div>
+
+              <div>
+                <label>Cleaning Fee (€)</label>
+                <input
+                  type="number"
+                  name="frais_menage"
+                  value={formData.frais_menage || 0}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Amenities Section */}
+          <div className="form-section">
+            <h2>Amenities</h2>
+            <div className="amenities-grid">
+              <div className="checkbox-container">
+                <input
+                  type="checkbox"
+                  name="accepteAnimaux"
+                  checked={formData.accepteAnimaux || false}
+                  onChange={handleChange}
+                />
+                <label>Accepts Pets</label>
+              </div>
+
+              <div className="checkbox-container">
+                <input
+                  type="checkbox"
+                  name="chauffage"
+                  checked={formData.chauffage || false}
+                  onChange={handleChange}
+                />
+                <label>Heating</label>
+              </div>
+
+              <div className="checkbox-container">
+                <input
+                  type="checkbox"
+                  name="wifi"
+                  checked={formData.wifi || false}
+                  onChange={handleChange}
+                />
+                <label>WiFi</label>
+              </div>
+
+              <div className="checkbox-container">
+                <input
+                  type="checkbox"
+                  name="television"
+                  checked={formData.television || false}
+                  onChange={handleChange}
+                />
+                <label>Television</label>
+              </div>
+
+              <div className="checkbox-container">
+                <input
+                  type="checkbox"
+                  name="lave_Linge"
+                  checked={formData.lave_Linge || false}
+                  onChange={handleChange}
+                />
+                <label>Washing Machine</label>
+              </div>
+
+              <div className="checkbox-container">
+                <input
+                  type="checkbox"
+                  name="cuisine_equipee"
+                  checked={formData.cuisine_equipee || false}
+                  onChange={handleChange}
+                />
+                <label>Equipped Kitchen</label>
+              </div>
+            </div>
+          </div>
+
+          {/* Photos Section */}
+          <div className="form-section">
+            <h2>Photos</h2>
+            <div className="photo-urls-container">
+              <label>Photo URLs (one per line)</label>
+              <p className="text-sm text-gray-600 mb-2">Each URL will be displayed as a separate photo</p>
+              <textarea
+                value={photoUrlsText}
+                onChange={handlePhotoTextChange}
+                placeholder="Enter photo URLs, one per line"
+                className="photo-urls-textarea"
+                rows={8}
+              />
+              <div className="photo-count">
                 {photoUrlsText.split('\n').filter(url => url.trim() !== "").length} photo(s)
               </div>
             </div>
+          </div>
 
-            {/* Submit Buttons */}
-            <div className="flex justify-between">
-              <button type="button" onClick={cancelEdit} className="bg-gray-500 text-white p-3 rounded">
-                Cancel
-              </button>
-
-              <button type="submit" className="bg-green-600 text-white p-3 rounded" disabled={loading}>
-                {loading ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-          </form>
-        </div>
-      </>
+          {/* Submit Buttons */}
+          <div className="action-buttons">
+            <button type="button" onClick={cancelEdit} className="button button-secondary">
+              Cancel
+            </button>
+            <button type="submit" className="button button-primary" disabled={loading}>
+              {loading ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        </form>
+      </div>
     )
   }
 
-  // Render apartments list with better error handling
+  // Render apartments list
   return (
-    <>
-      
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-6">Manage Apartments</h1>
+    <div className="container">
+      <h1>Manage Apartments</h1>
 
-        {/* Check App state debugging */}
-        {apartments.length === 0 && !loading && (
-          <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 rounded">
-            <p className="font-semibold">No apartments found.</p>
-            <p className="text-sm">This could be because:</p>
-            <ul className="list-disc pl-5 text-sm">
-              <li>The API endpoint is not returning JSON data</li>
-              <li>There are no apartments in the database</li>
-              <li>The apartments are stored in a different property in the response</li>
-            </ul>
-            <button onClick={() => window.location.reload()} className="mt-2 bg-blue-500 text-white py-1 px-3 rounded">
-              Refresh Page
-            </button>
-          </div>
-        )}
+      {apartments.length === 0 && !loading && (
+        <div className="error-state">
+          <p className="font-semibold">No apartments found.</p>
+          <p className="text-sm">This could be because:</p>
+          <ul className="list-disc pl-5 text-sm">
+            <li>The API endpoint is not returning JSON data</li>
+            <li>There are no apartments in the database</li>
+            <li>The apartments are stored in a different property in the response</li>
+          </ul>
+          <button onClick={() => window.location.reload()} className="button button-primary mt-2">
+            Refresh Page
+          </button>
+        </div>
+      )}
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 border text-left">ID</th>
-                <th className="py-2 px-4 border text-left">Title</th>
-                <th className="py-2 px-4 border text-left">City</th>
-                <th className="py-2 px-4 border text-left">Price</th>
-                <th className="py-2 px-4 border text-left">Capacity</th>
-                <th className="py-2 px-4 border text-center">Actions</th>
+      <div className="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>City</th>
+              <th>Price</th>
+              <th>Capacity</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {!Array.isArray(apartments) || apartments.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center">
+                  No apartments found
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {!Array.isArray(apartments) || apartments.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-4 px-4 border text-center">
-                    No apartments found
+            ) : (
+              apartments.map((apt) => (
+                <tr key={apt.id}>
+                  <td>{apt.id}</td>
+                  <td>{apt.titre || "N/A"}</td>
+                  <td>{apt.ville || "N/A"}</td>
+                  <td>{apt.prix ? `${apt.prix} €` : "N/A"}</td>
+                  <td>{apt.capacite || "N/A"}</td>
+                  <td className="text-center">
+                    <button
+                      onClick={() => fetchApartmentDetails(apt.id)}
+                      className="button button-primary mr-2"
+                    >
+                      Edit
+                    </button>
+                    <button onClick={() => handleDelete(apt.id)} className="button button-danger">
+                      Delete
+                    </button>
                   </td>
                 </tr>
-              ) : (
-                apartments.map((apt) => (
-                  <tr key={apt.id} className="hover:bg-gray-50">
-                    <td className="py-2 px-4 border">{apt.id}</td>
-                    <td className="py-2 px-4 border">{apt.titre || "N/A"}</td>
-                    <td className="py-2 px-4 border">{apt.ville || "N/A"}</td>
-                    <td className="py-2 px-4 border">{apt.prix ? `${apt.prix} €` : "N/A"}</td>
-                    <td className="py-2 px-4 border">{apt.capacite || "N/A"}</td>
-                    <td className="py-2 px-4 border text-center">
-                      <button
-                        onClick={() => fetchApartmentDetails(apt.id)}
-                        className="bg-blue-500 text-white py-1 px-3 rounded mr-2"
-                      >
-                        Edit
-                      </button>
-                      <button onClick={() => handleDelete(apt.id)} className="bg-red-500 text-white py-1 px-3 rounded">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
-    </>
+    </div>
   )
 }
 
