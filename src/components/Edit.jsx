@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react"
 import axios from "axios"
 import './Edit.css';
@@ -9,7 +8,7 @@ const Edit = () => {
   const [error, setError] = useState(null)
   const [editingApartment, setEditingApartment] = useState(null)
   const [formData, setFormData] = useState(null)
-  const [photoUrls, setPhotoUrls] = useState([""])
+  const [photoUrlsText, setPhotoUrlsText] = useState("") // Changed to store all URLs as one text string
 
   // Fetch all apartments
   useEffect(() => {
@@ -111,9 +110,9 @@ const Edit = () => {
         checkout_heure: response.data.checkout_heure?.substring(0, 5) || "11:00",
       })
 
-      // Setup photo URLs
+      // Setup photo URLs as a single text with each URL on a new line
       const urls = photos.map((p) => p.photo_url || "")
-      setPhotoUrls(urls.length > 0 ? urls : [""])
+      setPhotoUrlsText(urls.join('\n'))
 
       setEditingApartment(id)
       setLoading(false)
@@ -133,22 +132,9 @@ const Edit = () => {
     }))
   }
 
-  // Handle photo URL changes
-  const handlePhotoChange = (index, value) => {
-    const newPhotoUrls = [...photoUrls]
-    newPhotoUrls[index] = value
-    setPhotoUrls(newPhotoUrls)
-  }
-
-  // Add new photo URL field
-  const addPhotoField = () => {
-    setPhotoUrls([...photoUrls, ""])
-  }
-
-  // Remove photo URL field
-  const removePhotoField = (index) => {
-    const newPhotoUrls = photoUrls.filter((_, i) => i !== index)
-    setPhotoUrls(newPhotoUrls.length > 0 ? newPhotoUrls : [""])
+  // Handle photo URLs text change
+  const handlePhotoTextChange = (e) => {
+    setPhotoUrlsText(e.target.value)
   }
 
   // Submit form
@@ -158,8 +144,15 @@ const Edit = () => {
     try {
       setLoading(true)
 
+      // Convert the text area content to an array of photo URLs
+      // Split by newline and filter out empty lines
+      const photoUrlsArray = photoUrlsText
+        .split('\n')
+        .map(url => url.trim())
+        .filter(url => url !== "")
+
       // Format photos for API
-      const formattedPhotos = photoUrls.filter((url) => url.trim() !== "").map((url) => ({ photo_url: url }))
+      const formattedPhotos = photoUrlsArray.map((url) => ({ photo_url: url }))
 
       // Create data object for API
       const apartmentData = {
@@ -455,33 +448,26 @@ const Edit = () => {
               </div>
             </div>
 
-            {/* Photos Section */}
+            {/* Photos Section - Modified to use a single textarea */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">Photos</h2>
-
-              {photoUrls.map((url, index) => (
-                <div key={index} className="flex items-center mb-2 gap-2">
-                  <input
-                    type="text"
-                    value={url}
-                    onChange={(e) => handlePhotoChange(index, e.target.value)}
-                    placeholder="Photo URL"
-                    className="flex-grow p-2 border rounded"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => removePhotoField(index)}
-                    className="bg-red-500 text-white p-2 rounded"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-
-              <button type="button" onClick={addPhotoField} className="bg-blue-500 text-white p-2 rounded mt-2">
-                Add Photo URL
-              </button>
+              
+              <div>
+                <label className="block mb-1">Photo URLs (one per line)</label>
+                <p className="text-sm text-gray-600 mb-2">Each URL will be displayed as a separate photo</p>
+                <textarea
+                  value={photoUrlsText}
+                  onChange={handlePhotoTextChange}
+                  placeholder="Enter photo URLs, one per line"
+                  className="w-full p-2 border rounded h-40 font-mono"
+                  rows={8}
+                />
+              </div>
+              
+              {/* Preview current photos count */}
+              <div className="mt-2 text-sm">
+                {photoUrlsText.split('\n').filter(url => url.trim() !== "").length} photo(s)
+              </div>
             </div>
 
             {/* Submit Buttons */}
@@ -573,4 +559,3 @@ const Edit = () => {
 }
 
 export default Edit
-
